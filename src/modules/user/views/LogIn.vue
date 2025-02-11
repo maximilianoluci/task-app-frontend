@@ -45,8 +45,8 @@ import AlertComponent from "@/components/alert/AlertComponent.vue";
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
-import UserService from "@/modules/user/UserService";
-import type { SignInUser } from "@/modules/user/UserTypes";
+import UserService from "@/modules/user/services/UserService";
+import type { SignInUser } from "@/modules/user/types/UserTypes";
 import router from "@/router";
 import { reactive, ref, watch } from "vue";
 import { z } from "zod";
@@ -101,11 +101,15 @@ async function signIn() {
     const user = { ...form };
 
     await userService.signIn(user as SignInUser);
-    router.push({ name: "home" });
+    redirectToHome();
   } catch (error) {
     errorMessage.value = (error as Error).message;
   } finally {
     loading.value = false;
   }
+}
+
+function redirectToHome() {
+  router.push({ name: "home" });
 }
 </script>

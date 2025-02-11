@@ -1,4 +1,4 @@
-import type { CreateUser, SignInUser } from "@/modules/user/UserTypes";
+import type { CreateUser, SignInUser } from "@/modules/user/types/UserTypes";
 import { post } from "@/network/network";
 
 export default class UserService {
