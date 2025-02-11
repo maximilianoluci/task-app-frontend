@@ -23,7 +23,7 @@ export default class UserService {
 
   async signIn(user: SignInUser) {
     try {
-      return await post(`${import.meta.env.VITE_API_URL}/user/login`, user);
+      return await post(`${import.meta.env.VITE_API_URL}/auth/sign-in`, user);
     } catch (error) {
       throw error;
     }
