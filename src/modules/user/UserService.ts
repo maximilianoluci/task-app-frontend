@@ -1,4 +1,4 @@
-import type { LoginUser, RegisterUser } from "@/modules/user/UserTypes";
+import type { CreateUser, SignInUser } from "@/modules/user/UserTypes";
 import { post } from "@/network/network";
 
 export default class UserService {
@@ -13,7 +13,7 @@ export default class UserService {
     return UserService.instance;
   }
 
-  async create(user: RegisterUser) {
+  async create(user: CreateUser) {
     try {
       return await post(`${import.meta.env.VITE_API_URL}/user`, user);
     } catch (error) {
@@ -21,7 +21,7 @@ export default class UserService {
     }
   }
 
-  async signIn(user: LoginUser) {
+  async signIn(user: SignInUser) {
     try {
       return await post(`${import.meta.env.VITE_API_URL}/user/login`, user);
     } catch (error) {

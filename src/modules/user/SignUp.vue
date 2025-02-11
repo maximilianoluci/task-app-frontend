@@ -52,7 +52,7 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/UserService";
-import type { RegisterUser } from "@/modules/user/UserTypes";
+import type { CreateUser } from "@/modules/user/UserTypes";
 import router from "@/router";
 import { Icon } from "@iconify/vue";
 import { defineAsyncComponent, reactive, ref, watch } from "vue";
@@ -70,14 +70,14 @@ const fields = [
   { name: "name", label: "Name", type: "text" },
   { name: "email", label: "Email", type: "email" },
   { name: "password", label: "Password", type: "password" },
-  { name: "confirmPassword", label: "Confirm Password", type: "password" },
+  { name: "passwordConfirm", label: "Confirm Password", type: "password" },
 ];
 
 const form = reactive<Record<string, string>>({
   name: "",
   email: "",
   password: "",
-  confirmPassword: "",
+  passwordConfirm: "",
 });
 
 const errors = reactive<Record<string, string>>({});
@@ -86,15 +86,15 @@ const createUserSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email format"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(5, "Password must be at least 5 characters"),
+    passwordConfirm: z.string().min(5, "Password must be at least 5 characters"),
   })
   .superRefine((data, ctx) => {
-    if (data.password !== data.confirmPassword) {
+    if (data.password !== data.passwordConfirm) {
       ctx.addIssue({
         code: "custom",
         message: "Passwords do not match",
-        path: ["confirmPassword"],
+        path: ["passwordConfirm"],
       });
     }
   });
@@ -125,9 +125,8 @@ async function create() {
 
   try {
     const newUser = { ...form };
-    delete newUser.confirmPassword;
 
-    await userService.create(newUser as RegisterUser);
+    await userService.create(newUser as CreateUser);
     isModalVisible.value = true;
   } catch (error) {
     errorMessage.value = (error as Error).message || "An error occurred";

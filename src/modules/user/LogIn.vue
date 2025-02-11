@@ -46,7 +46,7 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/UserService";
-import type { LoginUser } from "@/modules/user/UserTypes";
+import type { SignInUser } from "@/modules/user/UserTypes";
 import router from "@/router";
 import { reactive, ref, watch } from "vue";
 import { z } from "zod";
@@ -70,7 +70,7 @@ const errors = reactive<Record<string, string>>({});
 
 const createUserSchema = z.object({
   email: z.string().email("Invalid email format"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(5, "Password must be at least 5 characters"),
 });
 
 watch(errorMessage, (newValue) => {
@@ -100,7 +100,7 @@ async function signIn() {
   try {
     const user = { ...form };
 
-    await userService.signIn(user as LoginUser);
+    await userService.signIn(user as SignInUser);
     router.push({ name: "home" });
   } catch (error) {
     errorMessage.value = (error as Error).message;
