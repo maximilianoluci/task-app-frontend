@@ -7,7 +7,7 @@
     closable
     @click="clearMessage"
   />
-  <div class="relative z-0 mx-auto mt-4 max-w-5xl px-4">
+  <div class="relative z-0 mx-auto">
     <h1 class="mb-2">Sign Up</h1>
     <CardComponent padding="sm">
       <div class="space-y-3">

@@ -7,37 +7,35 @@
     closable
     @click="clearMessage"
   />
-  <div class="mx-auto mt-4 w-5xl">
-    <h1 class="mb-2">Log In</h1>
-    <CardComponent padding="sm">
-      <div class="space-y-3">
-        <InputComponent
-          v-for="field in fields"
-          :key="field.name"
-          v-bind="field"
-          v-model="form[field.name]"
-          :error="errors[field.name]"
-        />
-        <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
-          Don't have an account?
-          <RouterLink
-            to="sign-up"
-            class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
-          >
-            Sign up
-          </RouterLink>
-          here!
-        </span>
-        <ButtonComponent
-          :icon="loading ? 'line-md:loading-twotone-loop' : undefined"
-          :disabled="loading"
-          @click="signIn"
+  <h1 class="mb-2">Log In</h1>
+  <CardComponent padding="sm">
+    <div class="space-y-3">
+      <InputComponent
+        v-for="field in fields"
+        :key="field.name"
+        v-bind="field"
+        v-model="form[field.name]"
+        :error="errors[field.name]"
+      />
+      <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
+        Don't have an account?
+        <RouterLink
+          to="sign-up"
+          class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
         >
-          {{ loading ? "Logging In..." : "Log In" }}
-        </ButtonComponent>
-      </div>
-    </CardComponent>
-  </div>
+          Sign up
+        </RouterLink>
+        here!
+      </span>
+      <ButtonComponent
+        :icon="loading ? 'line-md:loading-twotone-loop' : undefined"
+        :disabled="loading"
+        @click="signIn"
+      >
+        {{ loading ? "Logging In..." : "Log In" }}
+      </ButtonComponent>
+    </div>
+  </CardComponent>
 </template>
 
 <script setup lang="ts">
