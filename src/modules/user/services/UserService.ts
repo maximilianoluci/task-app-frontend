@@ -1,4 +1,4 @@
-import type { CreateUser, SignInUser, UserId } from "@/modules/user/types/UserTypes";
+import type { CreateUser, SignInUser } from "@/modules/user/types/UserTypes";
 import { get, post } from "@/network";
 
 export default class UserService {
@@ -29,9 +29,17 @@ export default class UserService {
     }
   }
 
-  async getUser(id: string): Promise<UserId> {
+  async get(id: string) {
     try {
       return await get(`${import.meta.env.VITE_API_URL}/user/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAll() {
+    try {
+      return await get(`${import.meta.env.VITE_API_URL}/user`);
     } catch (error) {
       throw error;
     }

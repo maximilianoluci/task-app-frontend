@@ -12,6 +12,7 @@ import { computed } from "vue";
 
 const props = defineProps<{
   padding?: "sm" | "md";
+  hover?: boolean;
 }>();
 
 const computedClasses = computed(() => {
@@ -26,6 +27,10 @@ const computedClasses = computed(() => {
     default:
       classes.push("p-6");
       break;
+  }
+
+  if (props.hover) {
+    classes.push("hover:bg-gray-100", "dark:hover:bg-gray-700");
   }
 
   return classes.join(" ");
