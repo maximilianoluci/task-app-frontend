@@ -46,8 +46,11 @@ import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import type { SignInUser } from "@/modules/user/types/UserTypes";
 import router from "@/router";
+import { useAuthStore } from "@/stores/auth";
 import { reactive, ref, watch } from "vue";
 import { z } from "zod";
+
+const authStore = useAuthStore();
 
 const userService = UserService.getInstance();
 
@@ -98,8 +101,14 @@ async function signIn() {
   try {
     const user = { ...form };
 
-    await userService.signIn(user as SignInUser);
-    redirectToHome();
+    const response = await userService.signIn(user as SignInUser);
+
+    if (response.accessToken && response.refreshToken) {
+      authStore.setTokens(response.accessToken, response.refreshToken);
+      redirectToHome();
+    } else {
+      throw new Error("Invalid credentials");
+    }
   } catch (error) {
     errorMessage.value = (error as Error).message;
   } finally {

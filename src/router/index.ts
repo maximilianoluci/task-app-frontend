@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/auth";
 import HomeView from "@/views/HomeView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -65,6 +66,20 @@ const router = createRouter({
       ],
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  authStore.checkAuth();
+
+  const publicPages = ["log-in", "sign-up"];
+  const requiresAuth = !publicPages.includes(to.name as string);
+
+  if (requiresAuth && !authStore.isAuthenticated) {
+    next({ name: "log-in" });
+  } else {
+    next();
+  }
 });
 
 export default router;

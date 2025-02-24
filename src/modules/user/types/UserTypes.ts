@@ -16,3 +16,10 @@ export type SignInUser = {
   email: string;
   password: string;
 };
+
+export type ChangePassword = {
+  id: string;
+  currentPassword: string;
+  newPassword: string;
+  newPasswordConfirm: string;
+};

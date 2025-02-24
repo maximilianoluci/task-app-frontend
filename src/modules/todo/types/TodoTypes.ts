@@ -6,10 +6,16 @@ export enum Priority {
 
 export type CreateTodo = {
   title: string;
-  description: string;
-  dueDate: Date;
+  description?: string;
+  dueDate?: Date;
   completed: boolean;
-  priority: Priority;
+  priority?: Priority;
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type TodoId = CreateTodo & {
+  id: string;
+};
+
+export type UpdateTodo = Partial<CreateTodo>;
