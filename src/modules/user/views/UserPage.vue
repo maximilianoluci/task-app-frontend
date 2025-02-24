@@ -25,7 +25,7 @@ const user = ref<UserId | undefined>();
 
 onMounted(async () => {
   try {
-    user.value = await userService.get(userId);
+    user.value = await userService.findOne(userId);
   } catch (error) {
     console.error(error);
   }

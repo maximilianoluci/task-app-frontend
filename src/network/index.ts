@@ -19,4 +19,24 @@ const post = async (url: string, data: unknown) => {
   }
 };
 
-export { get, post };
+const patch = async (url: string, data: unknown) => {
+  try {
+    const response = await axios.patch(url, data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const put = async (url: string, data: unknown) => {
+  try {
+    const response = await axios.put(url, data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export { get, patch, post, put };

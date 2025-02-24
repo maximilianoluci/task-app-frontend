@@ -29,17 +29,17 @@ export default class UserService {
     }
   }
 
-  async get(id: string) {
+  async findAll() {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/user/${id}`);
+      return await get(`${import.meta.env.VITE_API_URL}/user`);
     } catch (error) {
       throw error;
     }
   }
 
-  async getAll() {
+  async findOne(id: string) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/user`);
+      return await get(`${import.meta.env.VITE_API_URL}/user/${id}`);
     } catch (error) {
       throw error;
     }

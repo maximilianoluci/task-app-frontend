@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import("@/modules/auth/views/SignUp.vue"),
     },
     {
+      path: "/todo",
+      name: "todo",
+      component: () => import("@/modules/todo/views/TodoList.vue"),
+    },
+    {
       path: "/user",
       children: [
         {

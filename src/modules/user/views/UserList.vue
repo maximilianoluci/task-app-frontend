@@ -31,7 +31,7 @@ const users = ref<UserId[] | undefined>();
 
 onMounted(async () => {
   try {
-    users.value = await userService.getAll();
+    users.value = await userService.findAll();
   } catch (error) {
     console.error(error);
   }
