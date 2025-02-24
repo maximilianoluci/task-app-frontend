@@ -77,6 +77,8 @@ router.beforeEach((to, from, next) => {
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next({ name: "log-in" });
+  } else if (authStore.isAuthenticated && publicPages.includes(to.name as string)) {
+    next({ name: "home" });
   } else {
     next();
   }
