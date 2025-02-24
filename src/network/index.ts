@@ -39,4 +39,14 @@ const put = async (url: string, data: unknown) => {
   }
 };
 
-export { get, patch, post, put };
+const remove = async (url: string) => {
+  try {
+    const response = await axios.delete(url);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export { get, patch, post, put, remove };

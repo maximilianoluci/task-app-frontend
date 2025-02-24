@@ -21,8 +21,33 @@ const router = createRouter({
     },
     {
       path: "/todo",
-      name: "todo",
-      component: () => import("@/modules/todo/views/TodoList.vue"),
+      children: [
+        {
+          path: "",
+          name: "todo-list",
+          component: () => import("@/modules/todo/views/TodoList.vue"),
+        },
+        {
+          path: ":id",
+          name: "todo-page",
+          component: () => import("@/modules/todo/views/TodoPage.vue"),
+        },
+      ],
+    },
+    {
+      path: "/list",
+      children: [
+        {
+          path: "",
+          name: "list-list",
+          component: () => import("@/modules/list/views/ListList.vue"),
+        },
+        {
+          path: ":id",
+          name: "list-page",
+          component: () => import("@/modules/list/views/ListPage.vue"),
+        },
+      ],
     },
     {
       path: "/user",
