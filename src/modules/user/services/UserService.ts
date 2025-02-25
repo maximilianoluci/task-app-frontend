@@ -36,4 +36,22 @@ export default class UserService {
       throw error;
     }
   }
+
+  async getCurrentUser() {
+    try {
+      return await get(`${import.meta.env.VITE_API_URL}/user/me`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getCurrentUserId() {
+    try {
+      const currentUser = await this.getCurrentUser();
+      return currentUser?.id || "";
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      return "";
+    }
+  }
 }

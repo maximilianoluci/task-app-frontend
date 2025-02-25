@@ -81,12 +81,21 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = !publicPages.includes(to.name as string);
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    next({ name: "log-in" });
-  } else if (authStore.isAuthenticated && publicPages.includes(to.name as string)) {
-    next({ name: "home" });
-  } else {
-    next();
+    return next({ name: "log-in" });
   }
+
+  if (authStore.isAuthenticated && publicPages.includes(to.name as string)) {
+    return next({ name: "home" });
+  }
+
+  if (to.name === "change-password") {
+    const userId = to.params.id as string;
+    if (!authStore.user || authStore.user.id !== userId) {
+      return next({ name: "home" });
+    }
+  }
+
+  next();
 });
 
 export default router;
