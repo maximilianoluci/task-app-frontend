@@ -7,7 +7,7 @@
     closable
     @click="clearMessage"
   />
-  <h1 class="mb-2">Log In</h1>
+  <h1 class="mb-2">Change Password</h1>
   <CardComponent padding="sm">
     <div class="space-y-3">
       <InputComponent
@@ -17,22 +17,12 @@
         v-model="form[field.name]"
         :error="errors[field.name]"
       />
-      <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
-        Don't have an account?
-        <RouterLink
-          to="sign-up"
-          class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
-        >
-          Sign up
-        </RouterLink>
-        here!
-      </span>
       <ButtonComponent
         :icon="loading ? 'line-md:loading-twotone-loop' : undefined"
         :disabled="loading"
-        @click="signIn"
+        @click="changePassword"
       >
-        {{ loading ? "Logging In..." : "Log In" }}
+        {{ loading ? "Changing Password..." : "Change Password" }}
       </ButtonComponent>
     </div>
   </CardComponent>
@@ -44,34 +34,38 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import AuthService from "@/modules/auth/services/AuthService";
-import type { SignInUser } from "@/modules/user/types/UserTypes";
 import router from "@/router";
-import { useAuthStore } from "@/stores/auth";
 import { reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { z } from "zod";
 
-const authStore = useAuthStore();
+const route = useRoute();
 
 const authService = AuthService.getInstance();
 
 const loading = ref<boolean>(false);
 const errorMessage = ref<string | undefined>();
 
+const userId = route.params.id as string;
+
 const fields = [
-  { name: "email", label: "Email", type: "email" },
-  { name: "password", label: "Password", type: "password" },
+  { name: "currentPassword", label: "Current Password", type: "password" },
+  { name: "newPassword", label: "New Password", type: "password" },
+  { name: "newPasswordConfirm", label: "Confirm New Password", type: "password" },
 ];
 
 const form = reactive<Record<string, string>>({
-  email: "",
-  password: "",
+  currentPassword: "",
+  newPassword: "",
+  newPasswordConfirm: "",
 });
 
 const errors = reactive<Record<string, string>>({});
 
 const createUserSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(5, "Password must be at least 5 characters"),
+  currentPassword: z.string().min(5, "Current password is required"),
+  newPassword: z.string().min(5, "New password is required"),
+  newPasswordConfirm: z.string().min(5, "Confirm new password is required"),
 });
 
 watch(errorMessage, (newValue) => {
@@ -84,39 +78,37 @@ function clearMessage() {
   errorMessage.value = undefined;
 }
 
-async function signIn() {
+async function changePassword() {
   Object.keys(errors).forEach((key) => (errors[key] = ""));
-  loading.value = true;
 
-  const { success, error } = createUserSchema.safeParse(form);
-
-  if (!success) {
-    error.issues.forEach((issue) => {
-      errors[issue.path[0]] = issue.message;
-    });
-    loading.value = false;
-    return;
-  }
+  const { currentPassword, newPassword, newPasswordConfirm } = form;
 
   try {
-    const user = { ...form };
+    createUserSchema.parse({ currentPassword, newPassword, newPasswordConfirm });
 
-    const response = await authService.signIn(user as SignInUser);
-
-    if (response.accessToken && response.refreshToken) {
-      authStore.setTokens(response.accessToken, response.refreshToken);
-      redirectToHome();
-    } else {
-      throw new Error("Invalid credentials");
+    if (newPassword !== newPasswordConfirm) {
+      errors.newPasswordConfirm = "Passwords do not match";
+      return;
     }
+
+    loading.value = true;
+
+    await authService.changePassword({
+      id: userId,
+      currentPassword,
+      newPassword,
+      newPasswordConfirm,
+    });
+
+    loading.value = false;
+
+    errorMessage.value = undefined;
+
+    router.push({ name: "user-page", params: { id: userId } });
   } catch (error) {
     errorMessage.value = (error as Error).message;
   } finally {
     loading.value = false;
   }
-}
-
-function redirectToHome() {
-  router.push({ name: "home" });
 }
 </script>

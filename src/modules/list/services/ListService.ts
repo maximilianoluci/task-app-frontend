@@ -21,9 +21,9 @@ export default class ListService {
     }
   }
 
-  async findAll() {
+  async findAll(userId: string) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/list`);
+      return await get(`${import.meta.env.VITE_API_URL}/list/${userId}`);
     } catch (error) {
       throw error;
     }

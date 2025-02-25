@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 const get = async (url: string) => {
@@ -31,7 +32,12 @@ const patch = async (url: string, data: unknown) => {
 
 const put = async (url: string, data: unknown) => {
   try {
-    const response = await axios.put(url, data);
+    const authStore = useAuthStore();
+    const headers = {
+      Authorization: `Bearer ${authStore.accessToken}`,
+    };
+
+    const response = await axios.put(url, data, { headers });
     return response.data;
   } catch (error) {
     console.error(error);

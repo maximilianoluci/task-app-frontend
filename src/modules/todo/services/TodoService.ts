@@ -21,9 +21,9 @@ export default class TodoService {
     }
   }
 
-  async findAll() {
+  async findAll(listId: string) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/todo`);
+      return await get(`${import.meta.env.VITE_API_URL}/todo/${listId}`);
     } catch (error) {
       throw error;
     }
