@@ -6,7 +6,7 @@
     <h1>User Page</h1>
     <div>User: {{ user.name }}</div>
     <div>Email: {{ user.email }}</div>
-    <ButtonComponent v-if="isCurrentUser" @click="changePassword">Change Password</ButtonComponent>
+    <ButtonComponent @click="changePassword">Change Password</ButtonComponent>
   </div>
 </template>
 
@@ -16,18 +16,16 @@ import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import { type UserId } from "@/modules/user/types/UserTypes";
 import router from "@/router";
-import { useAuthStore } from "@/stores/auth";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const authStore = useAuthStore();
+
 const userService = UserService.getInstance();
 
 const userId = route.params.id as string;
-const user = ref<UserId | undefined>();
 
-const isCurrentUser = computed(() => authStore.user?.id === userId);
+const user = ref<UserId | undefined>();
 
 onMounted(async () => {
   try {
