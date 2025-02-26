@@ -1,5 +1,5 @@
-import type { CreateList } from "@/modules/list/types/ListTypes";
-import { get, post } from "@/network";
+import type { CreateList, UpdateList } from "@/modules/list/types/ListTypes";
+import { get, patch, post } from "@/network";
 
 export default class ListService {
   private static instance: ListService;
@@ -32,6 +32,14 @@ export default class ListService {
   async findOne(id: string) {
     try {
       return await get(`${import.meta.env.VITE_API_URL}/list/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(id: string, list: UpdateList) {
+    try {
+      return await patch(`${import.meta.env.VITE_API_URL}/list/${id}`, list);
     } catch (error) {
       throw error;
     }

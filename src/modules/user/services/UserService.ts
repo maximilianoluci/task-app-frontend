@@ -1,5 +1,5 @@
-import type { CreateUser } from "@/modules/user/types/UserTypes";
-import { get, post } from "@/network";
+import type { CreateUser, User } from "@/modules/user/types/UserTypes";
+import { get, patch, post } from "@/network";
 
 export default class UserService {
   private static instance: UserService;
@@ -21,17 +21,17 @@ export default class UserService {
     }
   }
 
-  async findAll() {
+  async findOne(id: string) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/user`);
+      return await get(`${import.meta.env.VITE_API_URL}/user/${id}`);
     } catch (error) {
       throw error;
     }
   }
 
-  async findOne(id: string) {
+  async update(id: string, user: User) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/user/${id}`);
+      return await patch(`${import.meta.env.VITE_API_URL}/user/${id}`, user);
     } catch (error) {
       throw error;
     }

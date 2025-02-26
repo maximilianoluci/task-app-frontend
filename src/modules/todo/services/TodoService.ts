@@ -1,5 +1,5 @@
-import type { CreateTodo } from "@/modules/todo/types/TodoTypes";
-import { get, post } from "@/network";
+import type { CreateTodo, UpdateTodo } from "@/modules/todo/types/TodoTypes";
+import { get, patch, post } from "@/network";
 
 export default class TodoService {
   private static instance: TodoService;
@@ -32,6 +32,14 @@ export default class TodoService {
   async findOne(id: string) {
     try {
       return await get(`${import.meta.env.VITE_API_URL}/todo/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(id: string, todo: UpdateTodo) {
+    try {
+      return await patch(`${import.meta.env.VITE_API_URL}/todo/${id}`, todo);
     } catch (error) {
       throw error;
     }
