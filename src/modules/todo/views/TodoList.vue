@@ -4,8 +4,8 @@
   </div>
   <div v-else>
     <h1>Todo List</h1>
-    <ul>
-      <li v-for="todo in todos" :key="todo.id" class="mb-2">
+    <ul class="space-y-2">
+      <li v-for="todo in todos" :key="todo.id">
         <h3>{{ todo.title }}</h3>
         <h6 v-if="todo.description">{{ todo.description }}</h6>
       </li>
