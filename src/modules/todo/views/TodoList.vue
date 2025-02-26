@@ -4,19 +4,27 @@
   </div>
   <div v-else>
     <h1>Todo List</h1>
-    <ul class="space-y-2">
-      <li v-for="todo in todos" :key="todo.id">
+    <div class="space-y-2">
+      <CardComponent
+        v-for="todo in todos"
+        :key="todo.id"
+        @click="() => router.push({ name: 'todo-page', params: { listId, todoId: todo.id } })"
+        padding="sm"
+        hover
+      >
         <h3>{{ todo.title }}</h3>
         <h6 v-if="todo.description">{{ todo.description }}</h6>
-      </li>
-    </ul>
+      </CardComponent>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import CardComponent from "@/components/card/CardComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import type { TodoId } from "@/modules/todo/types/TodoTypes";
+import router from "@/router";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 

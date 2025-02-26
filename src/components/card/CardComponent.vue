@@ -30,7 +30,7 @@ const computedClasses = computed(() => {
   }
 
   if (props.hover) {
-    classes.push("hover:bg-gray-100", "dark:hover:bg-gray-700");
+    classes.push("hover:bg-gray-100", "dark:hover:bg-gray-700", "cursor-pointer");
   }
 
   return classes.join(" ");
