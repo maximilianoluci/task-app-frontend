@@ -3,7 +3,7 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <h1>Todo List</h1>
+    <h1 class="mb-2">Todo List</h1>
     <div class="space-y-2">
       <CardComponent
         v-for="todo in todos"

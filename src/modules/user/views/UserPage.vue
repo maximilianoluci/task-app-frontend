@@ -3,7 +3,7 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <h1>User Page</h1>
+    <h1 class="mb-2">User Page</h1>
     <div>User: {{ user.name }}</div>
     <div>Email: {{ user.email }}</div>
     <ButtonComponent @click="changePassword">Change Password</ButtonComponent>

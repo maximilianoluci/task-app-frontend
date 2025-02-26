@@ -23,7 +23,7 @@ export default class ListService {
 
   async findAll(userId: string) {
     try {
-      return await get(`${import.meta.env.VITE_API_URL}/list/${userId}`);
+      return await get(`${import.meta.env.VITE_API_URL}/list/${userId}/all`);
     } catch (error) {
       throw error;
     }
