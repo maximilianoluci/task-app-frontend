@@ -21,21 +21,6 @@ const router = createRouter({
       component: () => import("@/modules/auth/views/SignUp.vue"),
     },
     {
-      path: "/todo",
-      children: [
-        {
-          path: "",
-          name: "todo-list",
-          component: () => import("@/modules/todo/views/TodoList.vue"),
-        },
-        {
-          path: ":id",
-          name: "todo-page",
-          component: () => import("@/modules/todo/views/TodoPage.vue"),
-        },
-      ],
-    },
-    {
       path: "/list",
       children: [
         {
@@ -51,13 +36,23 @@ const router = createRouter({
       ],
     },
     {
-      path: "/user",
+      path: "/todo",
       children: [
         {
-          path: "",
-          name: "user-list",
-          component: () => import("@/modules/user/views/UserList.vue"),
+          path: ":listId",
+          name: "todo-list",
+          component: () => import("@/modules/todo/views/TodoList.vue"),
         },
+        {
+          path: ":listId/:todoId",
+          name: "todo-page",
+          component: () => import("@/modules/todo/views/TodoPage.vue"),
+        },
+      ],
+    },
+    {
+      path: "/user",
+      children: [
         {
           path: ":id",
           name: "user-page",
