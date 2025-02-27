@@ -30,10 +30,10 @@
 <script setup lang="ts">
 import CardComponent from "@/components/card/CardComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
+import TodoService from "@/modules/todo/services/TodoService";
+import type { TodoId } from "@/modules/todo/types/TodoTypes";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import TodoService from "../services/TodoService";
-import type { TodoId } from "../types/TodoTypes";
 
 const route = useRoute();
 

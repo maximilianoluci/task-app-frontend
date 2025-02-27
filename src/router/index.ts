@@ -24,7 +24,7 @@ const router = createRouter({
       path: "/list",
       children: [
         {
-          path: "",
+          path: ":userId",
           name: "list-list",
           component: () => import("@/modules/list/views/ListList.vue"),
         },
