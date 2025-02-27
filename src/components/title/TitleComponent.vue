@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 flex justify-between">
+  <div class="flex justify-between">
     <div class="flex cursor-pointer items-center gap-2" @click="backButtonClicked">
       <Icon icon="flowbite:arrow-left-outline" class="size-8" />
       <h1><slot></slot></h1>

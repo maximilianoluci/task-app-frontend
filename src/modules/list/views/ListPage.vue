@@ -4,6 +4,7 @@
   </div>
   <div v-else>
     <TitleComponent
+      class="mb-2"
       @edit-button:clicked="openEditModal"
       @back-button:clicked="
         () => router.push({ name: 'list-list', params: { userId: list?.userId } })
