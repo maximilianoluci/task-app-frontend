@@ -1,7 +1,12 @@
 <template>
   <div class="flex justify-between">
-    <div class="flex cursor-pointer items-center gap-2" @click="backButtonClicked">
-      <Icon v-if="showBackButton" icon="flowbite:arrow-left-outline" class="size-8" />
+    <div class="flex items-center gap-2">
+      <Icon
+        v-if="showBackButton"
+        icon="flowbite:arrow-left-outline"
+        class="size-8 cursor-pointer"
+        @click="backButtonClicked"
+      />
       <h1><slot name="title"></slot></h1>
     </div>
     <ButtonComponent :icon color="transparent" @click="rightButtonClicked">
