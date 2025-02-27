@@ -7,9 +7,10 @@
         class="size-8 cursor-pointer"
         @click="backButtonClicked"
       />
-      <h1><slot name="title"></slot></h1>
+      <h1 v-if="!isSubtitle"><slot name="title"></slot></h1>
+      <h2 v-if="isSubtitle"><slot name="title"></slot></h2>
     </div>
-    <ButtonComponent :icon color="transparent" @click="rightButtonClicked">
+    <ButtonComponent :icon size="xs" @click="rightButtonClicked">
       <slot name="button"></slot>
     </ButtonComponent>
   </div>
@@ -19,9 +20,10 @@
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
-const { icon, showBackButton } = defineProps<{
+const { icon, showBackButton, isSubtitle } = defineProps<{
   icon: string;
   showBackButton?: boolean;
+  isSubtitle?: boolean;
 }>();
 
 const emit = defineEmits(["right-button:clicked", "back-button:clicked"]);
