@@ -6,6 +6,7 @@ export type CreateList = {
 
 export type ListId = CreateList & {
   id: string;
+  userId: string;
 };
 
 export type UpdateList = Partial<CreateList>;

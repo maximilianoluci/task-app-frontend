@@ -3,12 +3,14 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <div class="mb-2 flex justify-between">
-      <h1>List Details</h1>
-      <ButtonComponent icon="flowbite:edit-outline" variant="primary" @click="openEditModal">
-        Edit
-      </ButtonComponent>
-    </div>
+    <TitleComponent
+      @edit-button:clicked="openEditModal"
+      @back-button:clicked="
+        () => router.push({ name: 'list-list', params: { userId: list?.userId } })
+      "
+    >
+      List Details
+    </TitleComponent>
     <div class="space-y-2">
       <CardComponent padding="sm">
         <div class="grid w-fit grid-cols-2">
@@ -49,8 +51,10 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
+import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { ListId } from "@/modules/list/types/ListTypes";
+import router from "@/router";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { z } from "zod";
