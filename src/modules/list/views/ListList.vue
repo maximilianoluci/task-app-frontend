@@ -27,7 +27,7 @@
           <InputComponent v-model="newList.title" label="Title" />
         </div>
         <div class="flex justify-end gap-2">
-          <ButtonComponent color="secondary" @click="closeNewModal"> Cancel </ButtonComponent>
+          <ButtonComponent color="secondary" @click="closeNewModal">Cancel</ButtonComponent>
           <ButtonComponent
             :disabled="loading"
             icon="flowbite:floppy-disk-alt-outline"
