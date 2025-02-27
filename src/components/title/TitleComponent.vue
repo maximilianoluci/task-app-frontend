@@ -1,11 +1,11 @@
 <template>
   <div class="flex justify-between">
     <div class="flex cursor-pointer items-center gap-2" @click="backButtonClicked">
-      <Icon icon="flowbite:arrow-left-outline" class="size-8" />
-      <h1><slot></slot></h1>
+      <Icon v-if="showBackButton" icon="flowbite:arrow-left-outline" class="size-8" />
+      <h1><slot name="title"></slot></h1>
     </div>
-    <ButtonComponent icon="flowbite:edit-outline" color="transparent" @click="editButtonClicked">
-      Edit
+    <ButtonComponent :icon color="transparent" @click="rightButtonClicked">
+      <slot name="button"></slot>
     </ButtonComponent>
   </div>
 </template>
@@ -14,10 +14,15 @@
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
-const emit = defineEmits(["edit-button:clicked", "back-button:clicked"]);
+const { icon, showBackButton } = defineProps<{
+  icon: string;
+  showBackButton?: boolean;
+}>();
 
-function editButtonClicked() {
-  emit("edit-button:clicked");
+const emit = defineEmits(["right-button:clicked", "back-button:clicked"]);
+
+function rightButtonClicked() {
+  emit("right-button:clicked");
 }
 
 function backButtonClicked() {

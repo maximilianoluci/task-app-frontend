@@ -3,12 +3,12 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <h1 class="mb-2">Todo List</h1>
+    <h1 class="mb-2">To Do List</h1>
     <div class="space-y-2">
       <CardComponent
         v-for="todo in todos"
         :key="todo.id"
-        @click="() => router.push({ name: 'todo-page', params: { listId, todoId: todo.id } })"
+        @click="() => router.push({ name: 'todo-page', params: { id: todo.id } })"
         padding="sm"
         hover
       >

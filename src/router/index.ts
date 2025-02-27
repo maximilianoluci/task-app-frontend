@@ -44,7 +44,7 @@ const router = createRouter({
           component: () => import("@/modules/todo/views/TodoList.vue"),
         },
         {
-          path: ":listId/:todoId",
+          path: ":id",
           name: "todo-page",
           component: () => import("@/modules/todo/views/TodoPage.vue"),
         },

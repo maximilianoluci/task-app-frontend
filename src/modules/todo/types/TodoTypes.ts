@@ -12,6 +12,7 @@ export type CreateTodo = {
   priority?: Priority;
   createdAt: Date;
   updatedAt: Date;
+  listId: string;
 };
 
 export type TodoId = CreateTodo & {

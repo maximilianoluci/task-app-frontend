@@ -5,12 +5,15 @@
   <div v-else>
     <TitleComponent
       class="mb-2"
-      @edit-button:clicked="openEditModal"
+      icon="flowbite:edit-outline"
+      show-back-button
+      @right-button:clicked="openEditModal"
       @back-button:clicked="
         () => router.push({ name: 'list-list', params: { userId: list?.userId } })
       "
     >
-      List Details
+      <template #title>List Details</template>
+      <template #button>Edit</template>
     </TitleComponent>
     <div class="space-y-2">
       <CardComponent padding="sm">
@@ -22,6 +25,14 @@
           <div class="font-semibold">Updated At:</div>
           <div>{{ new Date(list.updatedAt).toLocaleString() }}</div>
         </div>
+        <div class="flex justify-end">
+          <ButtonComponent
+            color="secondary"
+            @click="() => router.push({ name: 'todo-list', params: { listId } })"
+          >
+            See To Do List
+          </ButtonComponent>
+        </div>
       </CardComponent>
     </div>
   </div>
@@ -31,9 +42,7 @@
     </template>
     <template #body>
       <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <InputComponent v-model="editedList.title" label="Title" />
-        </div>
+        <InputComponent v-model="editedList.title" label="Title" />
       </div>
       <div class="flex justify-end gap-2">
         <ButtonComponent color="secondary" @click="() => (isModalVisible = false)">
@@ -54,7 +63,7 @@ import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
-import type { ListId } from "@/modules/list/types/ListTypes";
+import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import router from "@/router";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -72,7 +81,7 @@ const isModalVisible = ref<boolean>(false);
 const listId = route.params.id as string;
 
 const list = ref<ListId | undefined>();
-const editedList = ref<ListId | undefined>();
+const editedList = ref<UpdateList | undefined>();
 
 const createUserSchema = z.object({
   title: z.string().nonempty("Title is required"),

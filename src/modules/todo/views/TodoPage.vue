@@ -3,7 +3,17 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <h1 class="mb-2">Todo Details</h1>
+    <TitleComponent
+      class="mb-2"
+      icon="flowbite:edit-outline"
+      show-back-button
+      @back-button:clicked="
+        () => router.push({ name: 'todo-list', params: { listId: todo?.listId } })
+      "
+    >
+      <template #title>To Do Details</template>
+      <template #button>Edit</template>
+    </TitleComponent>
     <div class="space-y-2">
       <CardComponent padding="sm">
         <div class="grid w-fit grid-cols-2">
@@ -30,8 +40,10 @@
 <script setup lang="ts">
 import CardComponent from "@/components/card/CardComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
+import TitleComponent from "@/components/title/TitleComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import type { TodoId } from "@/modules/todo/types/TodoTypes";
+import router from "@/router";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -39,7 +51,7 @@ const route = useRoute();
 
 const todoService = TodoService.getInstance();
 
-const todoId = route.params.todoId as string;
+const todoId = route.params.id as string;
 
 const todo = ref<TodoId | undefined>();
 
