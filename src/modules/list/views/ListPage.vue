@@ -78,6 +78,8 @@
       <div class="space-y-2">
         <InputComponent v-model="newTodo.title" label="Title" />
         <InputComponent v-model="newTodo.description" label="Description" />
+        <InputComponent v-model="newTodo.priority" label="Priority" />
+        <DateTimeComponent v-model="newTodo.dueDate" label="Due Date" />
         <CheckboxComponent v-model="newTodo.completed" bordered>Completed</CheckboxComponent>
       </div>
       <div class="flex justify-end gap-2">
@@ -98,6 +100,7 @@
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
+import DateTimeComponent from "@/components/date-time/DateTimeComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
@@ -198,5 +201,21 @@ async function deleteList() {
   }
 }
 
-async function saveNewTodo() {}
+async function saveNewTodo() {
+  loading.value = true;
+
+  try {
+    newTodo.value.createdAt = new Date();
+    newTodo.value.updatedAt = new Date();
+
+    createUserSchema.parse(newTodo.value);
+    await todoService.create(newTodo.value);
+    todos.value = await todoService.findAll(listId);
+    isNewTodoModalVisible.value = false;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
