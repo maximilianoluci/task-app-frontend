@@ -8,9 +8,7 @@
       icon="flowbite:edit-outline"
       show-back-button
       @right-button:clicked="openEditModal"
-      @back-button:clicked="
-        () => router.push({ name: 'list-list', params: { userId: list?.userId } })
-      "
+      @back-button:clicked="handleBackButtonClick"
     >
       <template #title>List Details</template>
       <template #button>Edit</template>
@@ -163,6 +161,12 @@ function openNewModal() {
 
 function closeNewTodoModal() {
   isNewTodoModalVisible.value = false;
+}
+
+function handleBackButtonClick() {
+  if (!list.value) return;
+
+  router.push({ name: "list-list", params: { userId: list.value.userId } });
 }
 
 async function save() {
