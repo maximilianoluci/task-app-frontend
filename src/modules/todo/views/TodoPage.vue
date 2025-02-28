@@ -7,9 +7,7 @@
       class="mb-2"
       icon="flowbite:edit-outline"
       show-back-button
-      @back-button:clicked="
-        () => router.push({ name: 'todo-list', params: { listId: todo?.listId } })
-      "
+      @back-button:clicked="handleBackButtonClick"
     >
       <template #title>To Do Details</template>
       <template #button>Edit</template>
@@ -62,4 +60,10 @@ onMounted(async () => {
     console.error(error);
   }
 });
+
+function handleBackButtonClick() {
+  if (!todo.value) return;
+
+  router.push({ name: "list-page", params: { id: todo.value.listId } });
+}
 </script>
