@@ -1,7 +1,7 @@
 <template>
   <div class="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-black/50">
     <div
-      class="relative max-h-full w-full max-w-2xl rounded-lg bg-white p-4 shadow-sm dark:bg-gray-700"
+      class="relative max-h-full w-full max-w-2xl rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
     >
       <!-- Modal header slot -->
       <div

@@ -75,21 +75,20 @@
       <h1>New Todo</h1>
     </template>
     <template #body>
-      <!-- <div class="space-y-2">
+      <div class="space-y-2">
         <InputComponent v-model="newTodo.title" label="Title" />
         <InputComponent v-model="newTodo.description" label="Description" />
-        <InputComponent v-model="newTodo.dueDate" type="date" label="Due Date" />
-        <InputComponent v-model="newTodo.priority" type="number" label="Priority" />
-      </div> -->
+        <CheckboxComponent v-model="newTodo.completed" bordered>Completed</CheckboxComponent>
+      </div>
       <div class="flex justify-end gap-2">
         <ButtonComponent color="secondary" @click="closeNewTodoModal">Cancel</ButtonComponent>
-        <!-- <ButtonComponent
+        <ButtonComponent
           :disabled="loading"
           icon="flowbite:floppy-disk-alt-outline"
           @click="saveNewTodo"
         >
           {{ loading ? "Saving..." : "Save" }}
-        </ButtonComponent> -->
+        </ButtonComponent>
       </div>
     </template>
   </ModalComponent>
@@ -98,13 +97,14 @@
 <script setup lang="ts">
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
+import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
-import { type TodoId } from "@/modules/todo/types/TodoTypes";
+import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import router from "@/router";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -126,19 +126,25 @@ const listId = route.params.id as string;
 const list = ref<ListId | undefined>();
 const editedList = ref<UpdateList | undefined>();
 const todos = ref<TodoId[] | undefined>();
-// const newTodo = ref<CreateTodo>({
-//   title: "",
-//   description: "",
-//   dueDate: new Date(),
-//   priority: Priority.LOW,
-//   completed: false,
-//   createdAt: new Date(),
-//   updatedAt: new Date(),
-//   listId,
-// });
+const newTodo = ref<CreateTodo>({
+  title: "",
+  description: "",
+  dueDate: new Date(),
+  priority: Priority.LOW,
+  completed: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  listId,
+});
 
 const createUserSchema = z.object({
   title: z.string().nonempty("Title is required"),
+  description: z.string(),
+  dueDate: z.date(),
+  completed: z.boolean(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 onMounted(async () => {
@@ -191,4 +197,6 @@ async function deleteList() {
     console.error(error);
   }
 }
+
+async function saveNewTodo() {}
 </script>
