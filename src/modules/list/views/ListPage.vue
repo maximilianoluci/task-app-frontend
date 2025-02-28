@@ -78,8 +78,16 @@
       <div class="space-y-2">
         <InputComponent v-model="newTodo.title" label="Title" />
         <InputComponent v-model="newTodo.description" label="Description" />
-        <InputComponent v-model="newTodo.priority" label="Priority" />
-        <DateTimeComponent v-model="newTodo.dueDate" label="Due Date" />
+        <div class="flex gap-2">
+          <SelectComponent
+            class="w-1/2"
+            v-model="newTodo.priority"
+            :options="priorityOptions"
+            placeholder="Select a priority level"
+            label="Priority"
+          />
+          <DateTimeComponent class="w-1/2" v-model="newTodo.dueDate" label="Due Date" />
+        </div>
         <CheckboxComponent v-model="newTodo.completed" bordered>Completed</CheckboxComponent>
       </div>
       <div class="flex justify-end gap-2">
@@ -103,6 +111,7 @@ import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
 import DateTimeComponent from "@/components/date-time/DateTimeComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
+import SelectComponent from "@/components/select/SelectComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
@@ -126,6 +135,11 @@ const isNewTodoModalVisible = ref<boolean>(false);
 
 const listId = route.params.id as string;
 
+const priorityOptions = Object.values(Priority).map((value) => ({
+  name: value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(),
+  value,
+}));
+
 const list = ref<ListId | undefined>();
 const editedList = ref<UpdateList | undefined>();
 const todos = ref<TodoId[] | undefined>();
@@ -133,8 +147,8 @@ const newTodo = ref<CreateTodo>({
   title: "",
   description: "",
   dueDate: new Date(),
-  priority: Priority.LOW,
   completed: false,
+  priority: Priority.LOW,
   createdAt: new Date(),
   updatedAt: new Date(),
   listId,
@@ -145,7 +159,7 @@ const createUserSchema = z.object({
   description: z.string(),
   dueDate: z.date(),
   completed: z.boolean(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+  priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -209,6 +223,7 @@ async function saveNewTodo() {
     newTodo.value.updatedAt = new Date();
 
     createUserSchema.parse(newTodo.value);
+    console.log("Selected Priority:", newTodo.value.priority);
     await todoService.create(newTodo.value);
     todos.value = await todoService.findAll(listId);
     isNewTodoModalVisible.value = false;
