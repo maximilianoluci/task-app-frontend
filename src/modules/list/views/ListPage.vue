@@ -10,7 +10,7 @@
       @back-button:clicked="handleBackButtonClick"
       @right-button:clicked="openEditModal"
     >
-      <template #title>List Details: {{ list.title }}</template>
+      <template #title>List Details</template>
       <template #button>Edit</template>
     </TitleComponent>
     <div class="space-y-2">
