@@ -29,6 +29,11 @@
           <div class="font-semibold">Last Updated:</div>
           <div>{{ formatDate(todo.updatedAt) }}</div>
         </div>
+        <div class="flex justify-end gap-2">
+          <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
+            Delete
+          </ButtonComponent>
+        </div>
       </CardComponent>
     </div>
     <ModalComponent v-if="isEditTodoModalVisible && editTodo">
@@ -160,6 +165,19 @@ async function save() {
     console.error(error);
   } finally {
     loading.value = false;
+  }
+}
+
+async function deleteTodo() {
+  if (!todo.value) {
+    return;
+  }
+
+  try {
+    await todoService.remove(todoId);
+    router.push({ name: "list-page", params: { id: todo.value.listId } });
+  } catch (error) {
+    console.error(error);
   }
 }
 </script>
