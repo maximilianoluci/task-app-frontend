@@ -7,10 +7,10 @@
       class="mb-2"
       icon="flowbite:edit-outline"
       show-back-button
-      @right-button:clicked="openEditModal"
       @back-button:clicked="handleBackButtonClick"
+      @right-button:clicked="openEditModal"
     >
-      <template #title>List Details</template>
+      <template #title>List Details: {{ list.title }}</template>
       <template #button>Edit</template>
     </TitleComponent>
     <div class="space-y-2">
@@ -18,10 +18,6 @@
         <div class="grid w-fit grid-cols-2">
           <div class="font-semibold">Title:</div>
           <div>{{ list.title }}</div>
-          <div class="font-semibold">Created At:</div>
-          <div>{{ new Date(list.createdAt).toLocaleString() }}</div>
-          <div class="font-semibold">Updated At:</div>
-          <div>{{ new Date(list.updatedAt).toLocaleString() }}</div>
         </div>
         <div class="flex justify-end gap-2">
           <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteList">
@@ -52,19 +48,23 @@
       </div>
     </div>
   </div>
-  <ModalComponent v-if="isEditListModalVisible && editedList">
+  <ModalComponent v-if="isEditListModalVisible && editList">
     <template #header>
       <h1>Edit List</h1>
     </template>
     <template #body>
       <div class="space-y-2">
-        <InputComponent v-model="editedList.title" label="Title" />
+        <InputComponent v-model="editList.title" label="Title" />
       </div>
       <div class="flex justify-end gap-2">
         <ButtonComponent color="secondary" @click="() => (isEditListModalVisible = false)">
           Cancel
         </ButtonComponent>
-        <ButtonComponent :disabled="loading" icon="flowbite:floppy-disk-alt-outline" @click="save">
+        <ButtonComponent
+          :disabled="loading"
+          icon="flowbite:floppy-disk-alt-outline"
+          @click="saveList"
+        >
           {{ loading ? "Saving..." : "Save" }}
         </ButtonComponent>
       </div>
@@ -141,7 +141,8 @@ const priorityOptions = Object.values(Priority).map((value) => ({
 }));
 
 const list = ref<ListId | undefined>();
-const editedList = ref<UpdateList | undefined>();
+const editList = ref<UpdateList | undefined>();
+
 const todos = ref<TodoId[] | undefined>();
 const newTodo = ref<CreateTodo>({
   title: "",
@@ -154,7 +155,11 @@ const newTodo = ref<CreateTodo>({
   listId,
 });
 
-const createUserSchema = z.object({
+const updateListSchema = z.object({
+  title: z.string().nonempty("Title is required"),
+});
+
+const createTodoSchema = z.object({
   title: z.string().nonempty("Title is required"),
   description: z.string(),
   dueDate: z.date(),
@@ -174,7 +179,7 @@ onMounted(async () => {
 });
 
 function openEditModal() {
-  editedList.value = list.value ? JSON.parse(JSON.stringify(list.value)) : undefined;
+  editList.value = list.value;
   isEditListModalVisible.value = true;
 }
 
@@ -192,11 +197,16 @@ function handleBackButtonClick() {
   router.push({ name: "list-list", params: { userId: list.value.userId } });
 }
 
-async function save() {
+async function saveList() {
+  if (!editList.value) {
+    return;
+  }
+
   loading.value = true;
 
   try {
-    const updatedList = await listService.update(listId, createUserSchema.parse(editedList.value));
+    editList.value.updatedAt = new Date();
+    const updatedList = await listService.update(listId, updateListSchema.parse(editList.value));
     list.value = updatedList;
     isEditListModalVisible.value = false;
   } catch (error) {
@@ -222,8 +232,7 @@ async function saveNewTodo() {
     newTodo.value.createdAt = new Date();
     newTodo.value.updatedAt = new Date();
 
-    createUserSchema.parse(newTodo.value);
-    console.log("Selected Priority:", newTodo.value.priority);
+    createTodoSchema.parse(newTodo.value);
     await todoService.create(newTodo.value);
     todos.value = await todoService.findAll(listId);
     isNewTodoModalVisible.value = false;
