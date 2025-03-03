@@ -18,6 +18,8 @@
         <div class="grid w-fit grid-cols-2">
           <div class="font-semibold">Title:</div>
           <div>{{ list.title }}</div>
+          <div class="font-semibold">Last Updated:</div>
+          <div>{{ formatDate(list.updatedAt) }}</div>
         </div>
         <div class="flex justify-end gap-2">
           <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteList">
@@ -118,6 +120,7 @@ import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import router from "@/router";
+import { formatDate } from "@/utils";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { z } from "zod";

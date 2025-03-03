@@ -26,6 +26,8 @@
           <div>{{ todo.completed ? "Yes" : "No" }}</div>
           <div class="font-semibold">Priority:</div>
           <div>{{ todo.priority }}</div>
+          <div class="font-semibold">Last Updated:</div>
+          <div>{{ formatDate(todo.updatedAt) }}</div>
         </div>
       </CardComponent>
     </div>
@@ -149,6 +151,7 @@ async function save() {
 
   try {
     editTodo.value.updatedAt = new Date();
+    editTodo.value.createdAt = new Date(todo.value.createdAt);
 
     const updatedTodo = await todoService.update(todoId, updateTodoSchema.parse(editTodo.value));
     todo.value = updatedTodo;
