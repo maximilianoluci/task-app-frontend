@@ -116,7 +116,7 @@
       <div class="space-y-2 text-center">
         <div class="flex items-center justify-center gap-2">
           <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
-          <h2>WARNING!</h2>
+          <span class="text-5xl font-bold">WARNING!</span>
           <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
         </div>
         <div class="space-y-1">
