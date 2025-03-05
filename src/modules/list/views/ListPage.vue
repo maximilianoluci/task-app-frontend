@@ -109,9 +109,6 @@
     </template>
   </ModalComponent>
   <ModalComponent v-if="isDeleteModalVisible">
-    <template #header>
-      <h1>Delete List</h1>
-    </template>
     <template #body>
       <div class="space-y-2 text-center">
         <div class="flex items-center justify-center gap-2">
