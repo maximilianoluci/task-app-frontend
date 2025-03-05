@@ -22,7 +22,11 @@
           <div>{{ formatDate(list.updatedAt) }}</div>
         </div>
         <div class="flex justify-end gap-2">
-          <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteList">
+          <ButtonComponent
+            icon="flowbite:trash-bin-outline"
+            color="danger"
+            @click="openDeleteModal"
+          >
             Delete
           </ButtonComponent>
         </div>
@@ -104,6 +108,38 @@
       </div>
     </template>
   </ModalComponent>
+  <ModalComponent v-if="isDeleteModalVisible">
+    <template #header>
+      <h1>Delete List</h1>
+    </template>
+    <template #body>
+      <div class="space-y-2 text-center">
+        <div class="flex items-center justify-center gap-2">
+          <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+          <h2>WARNING!</h2>
+          <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+        </div>
+        <div class="space-y-1">
+          <p>
+            If you delete this list,
+            <span class="font-bold">all associated to-do items will also be deleted.</span>
+          </p>
+          <p class="italic">Are you sure you want to proceed?</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <ButtonComponent color="secondary" @click="closeDeleteModal">Cancel</ButtonComponent>
+        <ButtonComponent
+          icon="flowbite:trash-bin-outline"
+          :disabled="loading"
+          color="danger"
+          @click="deleteList"
+        >
+          {{ loading ? "Deleting..." : "Delete" }}
+        </ButtonComponent>
+      </div>
+    </template>
+  </ModalComponent>
 </template>
 
 <script setup lang="ts">
@@ -121,6 +157,7 @@ import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import router from "@/router";
 import { formatDate } from "@/utils";
+import { Icon } from "@iconify/vue/dist/iconify.js";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { z } from "zod";
@@ -135,6 +172,7 @@ const todoService = TodoService.getInstance();
 const loading = ref<boolean>(false);
 const isEditListModalVisible = ref<boolean>(false);
 const isNewTodoModalVisible = ref<boolean>(false);
+const isDeleteModalVisible = ref<boolean>(false);
 
 const listId = route.params.id as string;
 
@@ -218,12 +256,24 @@ async function saveList() {
   }
 }
 
+function openDeleteModal() {
+  isDeleteModalVisible.value = true;
+}
+
+function closeDeleteModal() {
+  isDeleteModalVisible.value = false;
+}
+
 async function deleteList() {
+  loading.value = true;
+
   try {
     await listService.remove(listId);
     router.push({ name: "list-list", params: { userId: list.value?.userId } });
   } catch (error) {
     console.error(error);
+  } finally {
+    loading.value = false;
   }
 }
 

@@ -57,9 +57,7 @@
           <CheckboxComponent v-model="editTodo.completed" bordered>Completed</CheckboxComponent>
         </div>
         <div class="flex justify-end gap-2">
-          <ButtonComponent color="secondary" @click="() => (isEditTodoModalVisible = false)"
-            >Cancel</ButtonComponent
-          >
+          <ButtonComponent color="secondary" @click="closeEditModal">Cancel</ButtonComponent>
           <ButtonComponent
             :disabled="loading"
             icon="flowbite:floppy-disk-alt-outline"
@@ -137,6 +135,12 @@ function openEditModal() {
   }
 
   isEditTodoModalVisible.value = true;
+}
+
+function closeEditModal() {
+  isEditTodoModalVisible.value = false;
+
+  editTodo.value = undefined;
 }
 
 function handleBackButtonClick() {
