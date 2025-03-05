@@ -49,14 +49,14 @@ import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { CreateList, ListId } from "@/modules/list/types/ListTypes";
-import router from "@/router";
 import { defineAsyncComponent, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
 const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
 
 const route = useRoute();
+const router = useRouter();
 
 const listService = ListService.getInstance();
 

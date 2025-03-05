@@ -34,12 +34,12 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import AuthService from "@/modules/auth/services/AuthService";
-import router from "@/router";
 import { reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
 const route = useRoute();
+const router = useRouter();
 
 const authService = AuthService.getInstance();
 

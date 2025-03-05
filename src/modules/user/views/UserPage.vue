@@ -15,11 +15,11 @@ import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import { type UserId } from "@/modules/user/types/UserTypes";
-import router from "@/router";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 
 const userService = UserService.getInstance();
 

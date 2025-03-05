@@ -45,10 +45,12 @@ import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import AuthService from "@/modules/auth/services/AuthService";
 import type { SignInUser } from "@/modules/user/types/UserTypes";
-import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import { reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { z } from "zod";
+
+const router = useRouter();
 
 const authStore = useAuthStore();
 

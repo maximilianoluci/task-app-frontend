@@ -82,15 +82,15 @@ import SelectComponent from "@/components/select/SelectComponent.vue";
 import TitleComponent from "@/components/title/TitleComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/TodoTypes";
-import router from "@/router";
 import { formatDate } from "@/utils";
 import { defineAsyncComponent, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
 const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
 
 const route = useRoute();
+const router = useRouter();
 
 const todoService = TodoService.getInstance();
 

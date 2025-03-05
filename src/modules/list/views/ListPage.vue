@@ -155,16 +155,16 @@ import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
-import router from "@/router";
 import { formatDate } from "@/utils";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import { defineAsyncComponent, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
 const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
 
 const route = useRoute();
+const router = useRouter();
 
 const listService = ListService.getInstance();
 const todoService = TodoService.getInstance();

@@ -53,10 +53,12 @@ import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import type { CreateUser } from "@/modules/user/types/UserTypes";
-import router from "@/router";
 import { Icon } from "@iconify/vue";
 import { defineAsyncComponent, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { z } from "zod";
+
+const router = useRouter();
 
 const userService = UserService.getInstance();
 
