@@ -115,8 +115,6 @@ const updateTodoSchema = z.object({
   dueDate: z.date(),
   completed: z.boolean(),
   priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
-  createdAt: z.date(),
-  updatedAt: z.date(),
 });
 
 onMounted(async () => {
@@ -156,7 +154,6 @@ async function save() {
 
   try {
     editTodo.value.updatedAt = new Date();
-    editTodo.value.createdAt = new Date(todo.value.createdAt);
 
     const updatedTodo = await todoService.update(todoId, updateTodoSchema.parse(editTodo.value));
     todo.value = updatedTodo;
