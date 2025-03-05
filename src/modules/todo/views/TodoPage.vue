@@ -130,7 +130,7 @@ function openEditModal() {
     editTodo.value = {
       title: todo.value.title,
       description: todo.value.description,
-      dueDate: todo.value.dueDate ? new Date(todo.value.dueDate) : new Date(),
+      dueDate: todo.value.dueDate ? new Date(todo.value.dueDate) : undefined,
       completed: todo.value.completed,
       priority: todo.value.priority,
     };
