@@ -150,7 +150,6 @@ const todos = ref<TodoId[] | undefined>();
 const newTodo = ref<CreateTodo>({
   title: "",
   description: "",
-  dueDate: new Date(),
   completed: false,
   priority: Priority.LOW,
   createdAt: new Date(),
