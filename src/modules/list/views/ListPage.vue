@@ -164,7 +164,7 @@ const updateListSchema = z.object({
 const createTodoSchema = z.object({
   title: z.string().nonempty("Title is required"),
   description: z.string(),
-  dueDate: z.date(),
+  dueDate: z.date().optional(),
   completed: z.boolean(),
   priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
   createdAt: z.date(),
