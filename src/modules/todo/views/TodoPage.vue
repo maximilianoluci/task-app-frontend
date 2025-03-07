@@ -13,29 +13,27 @@
       <template #title>To Do Details</template>
       <template #button>Edit</template>
     </TitleComponent>
-    <div class="space-y-2">
-      <CardComponent padding="sm">
-        <div class="grid w-fit grid-cols-2">
-          <div class="font-semibold">Title:</div>
-          <div>{{ todo.title }}</div>
-          <div class="font-semibold">Description:</div>
-          <div>{{ todo.description || "-" }}</div>
-          <div class="font-semibold">Due Date:</div>
-          <div>{{ todo.dueDate ? formatDate(todo.dueDate) : "-" }}</div>
-          <div class="font-semibold">Completed:</div>
-          <div>{{ todo.completed ? "Yes" : "No" }}</div>
-          <div class="font-semibold">Priority:</div>
-          <div>{{ todo.priority }}</div>
-          <div class="font-semibold">Last Updated:</div>
-          <div>{{ formatDate(todo.updatedAt) }}</div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
-            Delete
-          </ButtonComponent>
-        </div>
-      </CardComponent>
-    </div>
+    <CardComponent padding="sm">
+      <div class="grid w-fit grid-cols-2">
+        <div class="font-semibold">Title:</div>
+        <div>{{ todo.title }}</div>
+        <div class="font-semibold">Description:</div>
+        <div>{{ todo.description || "-" }}</div>
+        <div class="font-semibold">Due Date:</div>
+        <div>{{ todo.dueDate ? formatDate(todo.dueDate) : "-" }}</div>
+        <div class="font-semibold">Completed:</div>
+        <div>{{ todo.completed ? "Yes" : "No" }}</div>
+        <div class="font-semibold">Priority:</div>
+        <div>{{ todo.priority }}</div>
+        <div class="font-semibold">Last Updated:</div>
+        <div>{{ formatDate(todo.updatedAt) }}</div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
+          Delete
+        </ButtonComponent>
+      </div>
+    </CardComponent>
     <ModalComponent v-if="isEditTodoModalVisible && editTodo">
       <template #header>
         <h1>Edit Todo</h1>
