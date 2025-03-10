@@ -10,7 +10,7 @@
       >
         Task App
       </RouterLink>
-      <div class="mt-5 flex flex-row items-center gap-5 md:mt-0 md:justify-end md:ps-5">
+      <div class="mt-5 flex flex-row items-center gap-5 md:mt-0 md:ps-5">
         <button
           class="font-medium text-gray-600 hover:text-gray-400 focus:text-gray-400 focus:outline-hidden dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500"
           @click="toggleDark()"
