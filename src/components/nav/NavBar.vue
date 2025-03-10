@@ -8,7 +8,7 @@
         :to="{ name: 'home' }"
         aria-label="Brand"
       >
-        Home
+        Task App
       </RouterLink>
       <div class="mt-5 flex flex-row items-center gap-5 md:mt-0 md:justify-end md:ps-5">
         <button
