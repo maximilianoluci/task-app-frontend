@@ -1,10 +1,10 @@
 <template>
   <div>
-    <label :for="id" class="mb-0.5 block text-sm font-medium text-gray-900 dark:text-white">
-      {{ label }}<span v-if="required">*</span>
+    <label :for="computedId" class="mb-0.5 block text-sm font-medium text-gray-900 dark:text-white"
+      >{{ label }}<span v-if="required">*</span>
     </label>
     <input
-      :id
+      :id="computedId"
       v-bind="$attrs"
       v-model="modelValue"
       class="block w-full rounded-lg border p-2.5 text-sm dark:bg-gray-700"
@@ -17,12 +17,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-const {
-  id = `input-${Math.random().toString(36).substring(2, 9)}`,
-  label,
-  error,
-  required,
-} = defineProps<{
+const props = defineProps<{
   id?: string;
   label: string;
   error?: string;
@@ -52,8 +47,12 @@ const normalClasses = [
   "dark:placeholder-gray-400",
 ];
 
+const computedId = computed(
+  () => props.id ?? `input-${Math.random().toString(36).substring(2, 9)}`,
+);
+
 const computedErrorClass = computed(() => {
-  return error ? errorClasses.join(" ") : normalClasses.join(" ");
+  return props.error ? errorClasses.join(" ") : normalClasses.join(" ");
 });
 
 const modelValue = defineModel<string>();
