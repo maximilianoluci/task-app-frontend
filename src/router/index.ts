@@ -1,7 +1,6 @@
 import { useAuthStore } from "@/stores/auth";
 import LoggedInTemplate from "@/templates/LoggedInTemplate.vue";
 import LoggedOutTemplate from "@/templates/LoggedOutTemplate.vue";
-import HomeView from "@/views/HomeView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -9,7 +8,15 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      redirect: () => {
+        const authStore = useAuthStore();
+        return authStore.isAuthenticated ? { name: "home" } : { name: "log-in" };
+      },
+    },
+    {
+      path: "/auth",
       component: LoggedOutTemplate,
+      meta: { public: true },
       children: [
         {
           path: "log-in",
@@ -24,13 +31,14 @@ const router = createRouter({
       ],
     },
     {
-      path: "/",
+      path: "/app",
       component: LoggedInTemplate,
+      meta: { requiresAuth: true },
       children: [
         {
           path: "",
           name: "home",
-          component: HomeView,
+          component: () => import("@/views/HomeView.vue"),
         },
         {
           path: "list",
@@ -80,11 +88,10 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   authStore.checkAuth();
-  const publicPages = ["log-in", "sign-up"];
-  const requiresAuth = !publicPages.includes(to.name as string);
-  if (requiresAuth && !authStore.isAuthenticated) {
+
+  if (to.matched.some((record) => record.meta.requiresAuth) && !authStore.isAuthenticated) {
     next({ name: "log-in" });
-  } else if (authStore.isAuthenticated && publicPages.includes(to.name as string)) {
+  } else if (authStore.isAuthenticated && to.matched.some((record) => record.meta.public)) {
     next({ name: "home" });
   } else {
     next();
