@@ -11,9 +11,9 @@
       <div class="mt-5 flex flex-row items-center gap-5 md:mt-0 md:ps-5">
         <button
           class="cursor-pointer font-medium text-gray-600 hover:text-gray-400 active:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500 dark:active:text-neutral-600"
-          @click="toggleDark()"
+          @click="mode = mode === 'dark' ? 'light' : 'dark'"
         >
-          {{ isDark ? "Light" : "Dark" }} Mode
+          {{ mode === "dark" ? "Light" : "Dark" }} Mode
         </button>
         <button
           class="cursor-pointer font-medium text-gray-600 hover:text-gray-400 active:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500 dark:active:text-neutral-600"
@@ -28,14 +28,13 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
-import { useDark, useToggle } from "@vueuse/core";
+import { useColorMode } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const router = useRouter();
 
-const isDark = useDark();
-const toggleDark = useToggle(isDark);
+const mode = useColorMode();
 
 function logOut() {
   auth.logout();
