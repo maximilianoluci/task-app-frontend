@@ -14,9 +14,9 @@
               <UInput v-model="state.title" class="w-full" />
             </UFormField>
 
-            <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto
-              >Save</UButton
-            >
+            <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
+              Save
+            </UButton>
           </UForm>
         </template>
       </UModal>
