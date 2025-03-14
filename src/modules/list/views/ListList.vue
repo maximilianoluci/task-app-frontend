@@ -14,7 +14,7 @@
               <UInput v-model="state.title" class="w-full" />
             </UFormField>
 
-            <UButton type="submit">Submit</UButton>
+            <UButton type="submit" loading-auto>Submit</UButton>
           </UForm>
         </template>
       </UModal>
@@ -58,8 +58,6 @@ const state = reactive<CreateList>({
   userId,
 });
 
-const loading = ref<boolean>(false);
-
 const schema = z.object({
   title: z.string().nonempty("Title is required"),
   createdAt: z.date(),
@@ -75,8 +73,6 @@ onMounted(async () => {
 });
 
 async function save() {
-  loading.value = true;
-
   try {
     schema.parse(state);
     await listService.create(state);
@@ -90,8 +86,6 @@ async function save() {
     state.title = "";
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
   }
 }
 </script>
