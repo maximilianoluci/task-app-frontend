@@ -9,7 +9,7 @@
         <UButton icon="flowbite:plus-outline">New</UButton>
 
         <template #body>
-          <UForm :schema="schema" :state="state" class="space-y-4" @submit="save">
+          <UForm :schema :state class="space-y-4" @submit="save">
             <UFormField label="Title" name="title">
               <UInput v-model="state.title" class="w-full" />
             </UFormField>
