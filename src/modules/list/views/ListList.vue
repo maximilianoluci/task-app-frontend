@@ -43,7 +43,6 @@ import { z } from "zod";
 
 const route = useRoute();
 const router = useRouter();
-
 const toast = useToast();
 
 const listService = ListService.getInstance();
@@ -51,6 +50,7 @@ const listService = ListService.getInstance();
 const userId = route.params.userId as string;
 
 const lists = ref<ListId[] | undefined>();
+
 const state = reactive<CreateList>({
   title: "",
   createdAt: new Date(),
