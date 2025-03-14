@@ -12,6 +12,9 @@ export default defineConfig({
     vueDevTools(),
     ui({
       ui: {
+        icons: {
+          loading: "line-md:loading-twotone-loop",
+        },
         colors: {
           primary: "green",
           neutral: "neutral",
