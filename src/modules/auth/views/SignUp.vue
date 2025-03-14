@@ -19,7 +19,7 @@
           :error="errors[field.name]"
         />
         <ButtonComponent
-          :icon="loading ? 'line-md:loading-twotone-loop' : undefined"
+          :name="loading ? 'line-md:loading-twotone-loop' : undefined"
           :disabled="loading"
           @click="create"
         >
@@ -35,8 +35,8 @@
   >
     <template #body>
       <div class="flex flex-col items-center gap-2">
-        <Icon
-          icon="flowbite:check-circle-outline"
+        <UIcon
+          name="flowbite:check-circle-outline"
           class="size-14 text-green-800 dark:text-green-400"
         />
         <p class="text-bold text-center text-xl">Sign up successful!</p>
@@ -53,7 +53,6 @@ import CardComponent from "@/components/card/CardComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import type { CreateUser } from "@/modules/user/types/UserTypes";
-import { Icon } from "@iconify/vue";
 import { defineAsyncComponent, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { z } from "zod";

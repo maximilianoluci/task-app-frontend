@@ -1,9 +1,9 @@
 <template>
   <div class="flex justify-between">
     <div class="flex items-center gap-2">
-      <Icon
+      <UIcon
         v-if="showBackButton"
-        icon="flowbite:arrow-left-outline"
+        name="flowbite:arrow-left-outline"
         class="size-8 cursor-pointer"
         @click="backButtonClicked"
       />
@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
 
 const { icon, showBackButton, isSubtitle } = defineProps<{
   icon: string;

@@ -29,7 +29,7 @@
         <div>{{ formatDate(todo.updatedAt) }}</div>
       </div>
       <div class="flex justify-end gap-2">
-        <ButtonComponent icon="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
+        <ButtonComponent name="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
           Delete
         </ButtonComponent>
       </div>
@@ -58,7 +58,7 @@
           <ButtonComponent color="secondary" @click="closeEditModal">Cancel</ButtonComponent>
           <ButtonComponent
             :disabled="loading"
-            icon="flowbite:floppy-disk-alt-outline"
+            name="flowbite:floppy-disk-alt-outline"
             @click="save"
           >
             {{ loading ? "Saving..." : "Save" }}

@@ -23,7 +23,7 @@
         </div>
         <div class="flex justify-end gap-2">
           <ButtonComponent
-            icon="flowbite:trash-bin-outline"
+            name="flowbite:trash-bin-outline"
             color="danger"
             @click="openDeleteModal"
           >
@@ -68,7 +68,7 @@
         </ButtonComponent>
         <ButtonComponent
           :disabled="loading"
-          icon="flowbite:floppy-disk-alt-outline"
+          name="flowbite:floppy-disk-alt-outline"
           @click="saveList"
         >
           {{ loading ? "Saving..." : "Save" }}
@@ -100,7 +100,7 @@
         <ButtonComponent color="secondary" @click="closeNewTodoModal">Cancel</ButtonComponent>
         <ButtonComponent
           :disabled="loading"
-          icon="flowbite:floppy-disk-alt-outline"
+          name="flowbite:floppy-disk-alt-outline"
           @click="saveNewTodo"
         >
           {{ loading ? "Saving..." : "Save" }}
@@ -112,9 +112,9 @@
     <template #body>
       <div class="space-y-2 text-center">
         <div class="flex items-center justify-center gap-2">
-          <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+          <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
           <span class="text-5xl font-bold">WARNING!</span>
-          <Icon icon="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+          <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
         </div>
         <div class="space-y-1">
           <p>
@@ -127,7 +127,7 @@
       <div class="flex justify-end gap-2">
         <ButtonComponent color="secondary" @click="closeDeleteModal">Cancel</ButtonComponent>
         <ButtonComponent
-          icon="flowbite:trash-bin-outline"
+          name="flowbite:trash-bin-outline"
           :disabled="loading"
           color="danger"
           @click="deleteList"
@@ -153,7 +153,6 @@ import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import { formatDate } from "@/utils";
-import { Icon } from "@iconify/vue/dist/iconify.js";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";

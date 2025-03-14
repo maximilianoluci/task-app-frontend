@@ -30,7 +30,7 @@
           <ButtonComponent color="secondary" @click="closeNewModal">Cancel</ButtonComponent>
           <ButtonComponent
             :disabled="loading"
-            icon="flowbite:floppy-disk-alt-outline"
+            name="flowbite:floppy-disk-alt-outline"
             @click="save"
           >
             {{ loading ? "Saving..." : "Save" }}

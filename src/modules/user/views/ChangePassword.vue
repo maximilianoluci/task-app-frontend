@@ -18,7 +18,7 @@
         :error="errors[field.name]"
       />
       <ButtonComponent
-        :icon="loading ? 'line-md:loading-twotone-loop' : undefined"
+        :name="loading ? 'line-md:loading-twotone-loop' : undefined"
         :disabled="loading"
         @click="changePassword"
       >
