@@ -1,7 +1,5 @@
 <template>
-  <header
-    class="flex w-full flex-wrap bg-white py-3 text-sm md:flex-nowrap md:justify-start dark:bg-slate-900"
-  >
+  <header class="flex w-full flex-wrap py-3 text-sm md:flex-nowrap md:justify-start">
     <nav class="mx-auto w-full max-w-[85rem] px-4 md:flex md:items-center md:justify-between">
       <RouterLink
         class="flex-none text-xl font-semibold text-black hover:opacity-80 active:opacity-60 dark:text-white"

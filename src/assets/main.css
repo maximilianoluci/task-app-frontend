@@ -4,7 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  @apply bg-slate-50 font-sans text-black dark:bg-slate-950 dark:text-white;
+  @apply font-sans text-black dark:text-white;
 }
 
 h1 {
