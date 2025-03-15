@@ -26,7 +26,7 @@
         v-for="list in lists"
         :key="list.id"
         class="cursor-pointer"
-        variant="soft"
+        variant="subtle"
         @click="() => router.push({ name: 'list-page', params: { id: list.id } })"
       >
         <h3>{{ list.title }}</h3>
