@@ -16,7 +16,7 @@ export default defineConfig({
           loading: "line-md:loading-twotone-loop",
         },
         colors: {
-          primary: "green",
+          primary: "cyan",
           neutral: "neutral",
         },
       },
