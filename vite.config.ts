@@ -17,7 +17,7 @@ export default defineConfig({
         },
         colors: {
           primary: "cyan",
-          neutral: "neutral",
+          neutral: "zinc",
         },
       },
     }),
