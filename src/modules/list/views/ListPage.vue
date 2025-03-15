@@ -3,16 +3,36 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <TitleComponent
-      class="mb-2"
-      icon="flowbite:edit-outline"
-      show-back-button
-      @back-button:clicked="handleBackButtonClick"
-      @right-button:clicked="openEditModal"
-    >
-      <template #title>List Details</template>
-      <template #button>Edit</template>
-    </TitleComponent>
+    <div class="mb-2 flex justify-between">
+      <div class="flex items-center gap-2">
+        <UIcon
+          name="flowbite:arrow-left-outline"
+          class="size-8 cursor-pointer"
+          @click="handleBackButtonClick"
+        />
+        <h1>List Details</h1>
+      </div>
+      <UModal title="Edit List" description="Edit the list" v-model:open="isEditListModalOpen">
+        <UButton icon="flowbite:edit-outline">Edit</UButton>
+
+        <template #body>
+          <UForm
+            :schema="updateListSchema"
+            :state="updateListState"
+            class="space-y-4"
+            @submit="saveList"
+          >
+            <UFormField label="Title" name="title">
+              <UInput v-model="updateListState.title" class="w-full" />
+            </UFormField>
+
+            <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
+              Save
+            </UButton>
+          </UForm>
+        </template>
+      </UModal>
+    </div>
     <div class="space-y-2">
       <CardComponent padding="sm">
         <div class="grid w-fit grid-cols-2">
@@ -54,29 +74,7 @@
       </div>
     </div>
   </div>
-  <ModalComponent v-if="isEditListModalVisible && editList">
-    <template #header>
-      <h1>Edit List</h1>
-    </template>
-    <template #body>
-      <div class="space-y-2">
-        <InputComponent v-model="editList.title" label="Title" />
-      </div>
-      <div class="flex justify-end gap-2">
-        <ButtonComponent color="secondary" @click="() => (isEditListModalVisible = false)">
-          Cancel
-        </ButtonComponent>
-        <ButtonComponent
-          :disabled="loading"
-          name="flowbite:floppy-disk-alt-outline"
-          @click="saveList"
-        >
-          {{ loading ? "Saving..." : "Save" }}
-        </ButtonComponent>
-      </div>
-    </template>
-  </ModalComponent>
-  <ModalComponent v-if="isNewTodoModalVisible">
+  <ModalComponent v-if="isNewTodoModalOpen">
     <template #header>
       <h1>New Todo</h1>
     </template>
@@ -108,7 +106,7 @@
       </div>
     </template>
   </ModalComponent>
-  <ModalComponent v-if="isDeleteModalVisible">
+  <ModalComponent v-if="isDeleteModalOpen">
     <template #body>
       <div class="space-y-2 text-center">
         <div class="flex items-center justify-center gap-2">
@@ -161,14 +159,15 @@ const ModalComponent = defineAsyncComponent(() => import("@/components/modal/Mod
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const listService = ListService.getInstance();
 const todoService = TodoService.getInstance();
 
 const loading = ref<boolean>(false);
-const isEditListModalVisible = ref<boolean>(false);
-const isNewTodoModalVisible = ref<boolean>(false);
-const isDeleteModalVisible = ref<boolean>(false);
+const isEditListModalOpen = ref<boolean>(false);
+const isNewTodoModalOpen = ref<boolean>(false);
+const isDeleteModalOpen = ref<boolean>(false);
 
 const listId = route.params.id as string;
 
@@ -178,7 +177,13 @@ const priorityOptions = Object.values(Priority).map((value) => ({
 }));
 
 const list = ref<ListId | undefined>();
-const editList = ref<UpdateList | undefined>();
+
+const updateListState = ref<UpdateList>({});
+
+const updateListSchema = z.object({
+  title: z.string().nonempty("Title is required"),
+  updatedAt: z.date(),
+});
 
 const todos = ref<TodoId[] | undefined>();
 const newTodo = ref<CreateTodo>({
@@ -189,10 +194,6 @@ const newTodo = ref<CreateTodo>({
   createdAt: new Date(),
   updatedAt: new Date(),
   listId,
-});
-
-const updateListSchema = z.object({
-  title: z.string().nonempty("Title is required"),
 });
 
 const createTodoSchema = z.object({
@@ -209,23 +210,11 @@ onMounted(async () => {
   try {
     list.value = await listService.findOne(listId);
     todos.value = await todoService.findAll(listId);
+    updateListState.value = { ...list.value };
   } catch (error) {
     console.error(error);
   }
 });
-
-function openEditModal() {
-  editList.value = list.value;
-  isEditListModalVisible.value = true;
-}
-
-function openNewModal() {
-  isNewTodoModalVisible.value = true;
-}
-
-function closeNewTodoModal() {
-  isNewTodoModalVisible.value = false;
-}
 
 function handleBackButtonClick() {
   if (!list.value) return;
@@ -233,31 +222,48 @@ function handleBackButtonClick() {
   router.push({ name: "list-list", params: { userId: list.value.userId } });
 }
 
+function openNewModal() {
+  isNewTodoModalOpen.value = true;
+}
+
+function closeEditListModal() {
+  isEditListModalOpen.value = false;
+  updateListState.value.title = "";
+}
+
+function closeNewTodoModal() {
+  isNewTodoModalOpen.value = false;
+}
+
 async function saveList() {
-  if (!editList.value) {
-    return;
-  }
-
-  loading.value = true;
-
   try {
-    editList.value.updatedAt = new Date();
-    const updatedList = await listService.update(listId, updateListSchema.parse(editList.value));
+    updateListSchema.parse(updateListState);
+    updateListState.value.updatedAt = new Date();
+
+    const updatedList = await listService.update(listId, updateListSchema.parse(updateListState));
+
     list.value = updatedList;
-    isEditListModalVisible.value = false;
+    isEditListModalOpen.value = false;
+
+    toast.add({
+      title: "Success",
+      description: "The list has been updated.",
+      color: "success",
+      icon: "flowbite:check-circle-outline",
+    });
+
+    closeEditListModal();
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
   }
 }
 
 function openDeleteModal() {
-  isDeleteModalVisible.value = true;
+  isDeleteModalOpen.value = true;
 }
 
 function closeDeleteModal() {
-  isDeleteModalVisible.value = false;
+  isDeleteModalOpen.value = false;
 }
 
 async function deleteList() {
@@ -283,7 +289,7 @@ async function saveNewTodo() {
     createTodoSchema.parse(newTodo.value);
     await todoService.create(newTodo.value);
     todos.value = await todoService.findAll(listId);
-    isNewTodoModalVisible.value = false;
+    isNewTodoModalOpen.value = false;
   } catch (error) {
     console.error(error);
   } finally {
