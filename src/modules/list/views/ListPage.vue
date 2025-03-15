@@ -210,7 +210,10 @@ onMounted(async () => {
   try {
     list.value = await listService.findOne(listId);
     todos.value = await todoService.findAll(listId);
-    updateListState.value = { ...list.value };
+    updateListState.value = {
+      title: list.value ? list.value.title : "",
+      updatedAt: new Date(),
+    };
   } catch (error) {
     console.error(error);
   }
@@ -228,7 +231,7 @@ function openNewModal() {
 
 function closeEditListModal() {
   isEditListModalOpen.value = false;
-  updateListState.value.title = "";
+  updateListState.value.title = list.value ? list.value.title : "";
 }
 
 function closeNewTodoModal() {
@@ -237,12 +240,12 @@ function closeNewTodoModal() {
 
 async function saveList() {
   try {
-    updateListSchema.parse(updateListState);
     updateListState.value.updatedAt = new Date();
+    updateListSchema.parse(updateListState.value);
 
-    const updatedList = await listService.update(listId, updateListSchema.parse(updateListState));
+    const updatedListResponse = await listService.update(listId, updateListState.value);
 
-    list.value = updatedList;
+    list.value = updatedListResponse;
     isEditListModalOpen.value = false;
 
     toast.add({
