@@ -34,7 +34,7 @@
       </UModal>
     </div>
     <div class="space-y-2">
-      <CardComponent padding="sm">
+      <UCard variant="subtle">
         <div class="grid w-fit grid-cols-2">
           <div class="font-semibold">Title:</div>
           <div>{{ list.title }}</div>
@@ -42,15 +42,40 @@
           <div>{{ formatDate(list.updatedAt) }}</div>
         </div>
         <div class="flex justify-end gap-2">
-          <ButtonComponent
-            name="flowbite:trash-bin-outline"
-            color="danger"
-            @click="openDeleteModal"
+          <UModal
+            title="Delete List"
+            description="Delete the list"
+            v-model:open="isDeleteModalOpen"
           >
-            Delete
-          </ButtonComponent>
+            <UButton icon="flowbite:trash-bin-outline" color="error">Delete</UButton>
+
+            <template #body>
+              <div class="space-y-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+                  <span class="text-5xl font-bold">WARNING!</span>
+                  <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
+                </div>
+                <div class="space-y-1">
+                  <p>
+                    If you delete this list,
+                    <span class="font-bold">all associated to-do items will also be deleted.</span>
+                  </p>
+                  <p class="italic">Are you sure you want to proceed?</p>
+                </div>
+                <UButton
+                  icon="flowbite:trash-bin-outline"
+                  loading-auto
+                  color="error"
+                  @click="deleteList"
+                >
+                  Delete
+                </UButton>
+              </div>
+            </template>
+          </UModal>
         </div>
-      </CardComponent>
+      </UCard>
       <TitleComponent
         class="mb-2"
         icon="flowbite:plus-outline"
@@ -61,16 +86,16 @@
         <template #button>New</template>
       </TitleComponent>
       <div class="space-y-2">
-        <CardComponent
+        <UCard
           v-for="todo in todos"
           :key="todo.id"
+          class="cursor-pointer"
+          variant="subtle"
           @click="() => router.push({ name: 'todo-page', params: { id: todo.id } })"
-          padding="sm"
-          hover
         >
           <h3>{{ todo.title }}</h3>
           <h6 v-if="todo.description">{{ todo.description }}</h6>
-        </CardComponent>
+        </UCard>
       </div>
     </div>
   </div>
@@ -106,40 +131,10 @@
       </div>
     </template>
   </ModalComponent>
-  <ModalComponent v-if="isDeleteModalOpen">
-    <template #body>
-      <div class="space-y-2 text-center">
-        <div class="flex items-center justify-center gap-2">
-          <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
-          <span class="text-5xl font-bold">WARNING!</span>
-          <UIcon name="fluent:warning-48-filled" class="size-14 text-yellow-300" />
-        </div>
-        <div class="space-y-1">
-          <p>
-            If you delete this list,
-            <span class="font-bold">all associated to-do items will also be deleted.</span>
-          </p>
-          <p class="italic">Are you sure you want to proceed?</p>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2">
-        <ButtonComponent color="secondary" @click="closeDeleteModal">Cancel</ButtonComponent>
-        <ButtonComponent
-          name="flowbite:trash-bin-outline"
-          :disabled="loading"
-          color="danger"
-          @click="deleteList"
-        >
-          {{ loading ? "Deleting..." : "Delete" }}
-        </ButtonComponent>
-      </div>
-    </template>
-  </ModalComponent>
 </template>
 
 <script setup lang="ts">
 import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CardComponent from "@/components/card/CardComponent.vue";
 import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
 import DateTimeComponent from "@/components/date-time/DateTimeComponent.vue";
 import InputComponent from "@/components/input/InputComponent.vue";
@@ -261,20 +256,13 @@ async function saveList() {
   }
 }
 
-function openDeleteModal() {
-  isDeleteModalOpen.value = true;
-}
-
-function closeDeleteModal() {
-  isDeleteModalOpen.value = false;
-}
-
 async function deleteList() {
   loading.value = true;
 
   try {
     await listService.remove(listId);
     router.push({ name: "list-list", params: { userId: list.value?.userId } });
+    isDeleteModalOpen.value = false;
   } catch (error) {
     console.error(error);
   } finally {
