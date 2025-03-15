@@ -5,7 +5,7 @@
   <div v-else>
     <div class="mb-2 flex justify-between">
       <h1>List</h1>
-      <UModal title="New List" description="Create a new list">
+      <UModal title="New List" description="Create a new list" v-model:open="isModalOpen">
         <UButton icon="flowbite:plus-outline">New</UButton>
 
         <template #body>
@@ -51,6 +51,8 @@ const listService = ListService.getInstance();
 
 const userId = route.params.userId as string;
 
+const isModalOpen = ref<boolean>(false);
+
 const lists = ref<ListId[] | undefined>();
 
 const state = reactive<CreateList>({
@@ -74,18 +76,26 @@ onMounted(async () => {
   }
 });
 
+function closeModal() {
+  isModalOpen.value = false;
+  state.title = "";
+}
+
 async function save() {
   try {
     schema.parse(state);
     await listService.create(state);
+
     lists.value = await listService.findAll(userId);
+
     toast.add({
       title: "Success",
       description: "The list has been created.",
       color: "success",
       icon: "flowbite:check-circle-outline",
     });
-    state.title = "";
+
+    closeModal();
   } catch (error) {
     console.error(error);
   }
