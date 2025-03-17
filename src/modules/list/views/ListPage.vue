@@ -76,15 +76,55 @@
           </UModal>
         </div>
       </UCard>
-      <TitleComponent
-        class="mb-2"
-        icon="flowbite:plus-outline"
-        is-subtitle
-        @right-button:clicked="openNewModal"
-      >
-        <template #title>To Do List</template>
-        <template #button>New</template>
-      </TitleComponent>
+      <div class="mb-2 flex justify-between">
+        <h2>To Do List</h2>
+        <UModal
+          title="New To-do Item"
+          description="Create a new to-do item"
+          v-model:open="isNewTodoModalOpen"
+        >
+          <UButton icon="flowbite:plus-outline">New</UButton>
+
+          <template #body>
+            <UForm
+              :schema="createTodoSchema"
+              :state="createTodoState"
+              class="space-y-4"
+              @submit="saveNewTodo"
+            >
+              <UFormField label="Title" name="title">
+                <UInput v-model="createTodoState.title" class="w-full" />
+              </UFormField>
+              <UFormField label="Description" name="description">
+                <UInput v-model="createTodoState.description" class="w-full" />
+              </UFormField>
+              <div class="grid grid-cols-2 gap-2">
+                <UFormField label="Priority" name="priority">
+                  <USelect
+                    v-model="createTodoState.priority"
+                    :items="priorityOptions"
+                    placeholder="Select a priority level"
+                    class="w-full"
+                  />
+                </UFormField>
+                <UFormField label="Due Date" name="dueDate">
+                  <UInput type="datetime-local" v-model="formattedDueDate" class="w-full" />
+                </UFormField>
+              </div>
+
+              <UFormField
+                class="w-full rounded-md border border-gray-300 py-3 ps-4 dark:border-zinc-700"
+                name="completed"
+              >
+                <UCheckbox v-model="createTodoState.completed" label="Completed" />
+              </UFormField>
+              <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
+                Add
+              </UButton>
+            </UForm>
+          </template>
+        </UModal>
+      </div>
       <div class="space-y-2">
         <UCard
           v-for="todo in todos"
@@ -99,58 +139,18 @@
       </div>
     </div>
   </div>
-  <ModalComponent v-if="isNewTodoModalOpen">
-    <template #header>
-      <h1>New Todo</h1>
-    </template>
-    <template #body>
-      <div class="space-y-2">
-        <InputComponent v-model="newTodo.title" label="Title" />
-        <InputComponent v-model="newTodo.description" label="Description" />
-        <div class="flex gap-2">
-          <SelectComponent
-            class="w-1/2"
-            v-model="newTodo.priority"
-            :options="priorityOptions"
-            placeholder="Select a priority level"
-            label="Priority"
-          />
-          <DateTimeComponent class="w-1/2" v-model="newTodo.dueDate" label="Due Date" />
-        </div>
-        <CheckboxComponent v-model="newTodo.completed" bordered>Completed</CheckboxComponent>
-      </div>
-      <div class="flex justify-end gap-2">
-        <ButtonComponent color="secondary" @click="closeNewTodoModal">Cancel</ButtonComponent>
-        <ButtonComponent
-          :disabled="loading"
-          name="flowbite:floppy-disk-alt-outline"
-          @click="saveNewTodo"
-        >
-          {{ loading ? "Saving..." : "Save" }}
-        </ButtonComponent>
-      </div>
-    </template>
-  </ModalComponent>
 </template>
 
 <script setup lang="ts">
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
-import DateTimeComponent from "@/components/date-time/DateTimeComponent.vue";
-import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
-import SelectComponent from "@/components/select/SelectComponent.vue";
-import TitleComponent from "@/components/title/TitleComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import { formatDate } from "@/utils";
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
-
-const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
 
 const route = useRoute();
 const router = useRouter();
@@ -166,10 +166,7 @@ const isDeleteModalOpen = ref<boolean>(false);
 
 const listId = route.params.id as string;
 
-const priorityOptions = Object.values(Priority).map((value) => ({
-  name: value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(),
-  value,
-}));
+const priorityOptions = Object.values(Priority).map((value) => value);
 
 const list = ref<ListId | undefined>();
 
@@ -181,10 +178,12 @@ const updateListSchema = z.object({
 });
 
 const todos = ref<TodoId[] | undefined>();
-const newTodo = ref<CreateTodo>({
+
+const createTodoState = reactive<CreateTodo>({
   title: "",
   description: "",
   completed: false,
+  dueDate: new Date(),
   priority: Priority.LOW,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -201,10 +200,20 @@ const createTodoSchema = z.object({
   updatedAt: z.date(),
 });
 
+const formattedDueDate = computed({
+  get() {
+    return createTodoState.dueDate ? createTodoState.dueDate.toISOString().slice(0, 16) : "";
+  },
+  set(value) {
+    createTodoState.dueDate = value ? new Date(value) : undefined;
+  },
+});
+
 onMounted(async () => {
   try {
     list.value = await listService.findOne(listId);
     todos.value = await todoService.findAll(listId);
+
     updateListState.value = {
       title: list.value ? list.value.title : "",
       updatedAt: new Date(),
@@ -220,17 +229,9 @@ function handleBackButtonClick() {
   router.push({ name: "list-list", params: { userId: list.value.userId } });
 }
 
-function openNewModal() {
-  isNewTodoModalOpen.value = true;
-}
-
 function closeEditListModal() {
   isEditListModalOpen.value = false;
   updateListState.value.title = list.value ? list.value.title : "";
-}
-
-function closeNewTodoModal() {
-  isNewTodoModalOpen.value = false;
 }
 
 async function saveList() {
@@ -274,12 +275,17 @@ async function saveNewTodo() {
   loading.value = true;
 
   try {
-    newTodo.value.createdAt = new Date();
-    newTodo.value.updatedAt = new Date();
-
-    createTodoSchema.parse(newTodo.value);
-    await todoService.create(newTodo.value);
+    createTodoSchema.parse(createTodoState);
+    await todoService.create(createTodoState);
     todos.value = await todoService.findAll(listId);
+
+    toast.add({
+      title: "Success",
+      description: "The to-do item has been created.",
+      color: "success",
+      icon: "flowbite:check-circle-outline",
+    });
+
     isNewTodoModalOpen.value = false;
   } catch (error) {
     console.error(error);
