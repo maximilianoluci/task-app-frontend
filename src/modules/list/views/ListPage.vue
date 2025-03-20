@@ -214,8 +214,10 @@ onMounted(async () => {
     list.value = await listService.findOne(listId);
     todos.value = await todoService.findAll(listId);
 
+    if (!list.value) return;
+
     updateListState.value = {
-      title: list.value ? list.value.title : "",
+      title: list.value.title,
       updatedAt: new Date(),
     };
   } catch (error) {

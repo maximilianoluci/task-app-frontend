@@ -3,17 +3,58 @@
     <LoadingComponent />
   </div>
   <div v-else>
-    <TitleComponent
-      class="mb-2"
-      icon="flowbite:edit-outline"
-      show-back-button
-      @back-button:clicked="handleBackButtonClick"
-      @right-button:clicked="openEditModal"
-    >
-      <template #title>To Do Details</template>
-      <template #button>Edit</template>
-    </TitleComponent>
-    <CardComponent padding="sm">
+    <div class="mb-2 flex justify-between">
+      <div class="flex items-center gap-2">
+        <UIcon
+          name="flowbite:arrow-left-outline"
+          class="size-8 cursor-pointer"
+          @click="handleBackButtonClick"
+        />
+        <h1>To Do Details</h1>
+      </div>
+      <UModal
+        title="Edit To-do Item"
+        description="Edit the details of the to-do item"
+        v-model:open="isEditTodoModalOpen"
+      >
+        <UButton icon="flowbite:edit-outline">Edit</UButton>
+
+        <template #body>
+          <UForm :schema :state class="space-y-4" @submit="save">
+            <UFormField label="Title" name="title">
+              <UInput v-model="state.title" class="w-full" />
+            </UFormField>
+            <UFormField label="Description" name="description">
+              <UInput v-model="state.description" class="w-full" />
+            </UFormField>
+            <div class="grid grid-cols-2 gap-2">
+              <UFormField label="Priority" name="priority">
+                <USelect
+                  v-model="state.priority"
+                  :items="priorityOptions"
+                  placeholder="Select a priority level"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField label="Due Date" name="dueDate">
+                <UInput type="datetime-local" v-model="formattedDueDate" class="w-full" />
+              </UFormField>
+            </div>
+
+            <UFormField
+              class="w-full rounded-md border border-gray-300 py-3 ps-4 dark:border-zinc-700"
+              name="completed"
+            >
+              <UCheckbox v-model="state.completed" label="Completed" />
+            </UFormField>
+            <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
+              Save
+            </UButton>
+          </UForm>
+        </template>
+      </UModal>
+    </div>
+    <UCard variant="subtle">
       <div class="grid w-fit grid-cols-2">
         <div class="font-semibold">Title:</div>
         <div>{{ todo.title }}</div>
@@ -29,137 +70,95 @@
         <div>{{ formatDate(todo.updatedAt) }}</div>
       </div>
       <div class="flex justify-end gap-2">
-        <ButtonComponent name="flowbite:trash-bin-outline" color="danger" @click="deleteTodo">
+        <UButton icon="flowbite:trash-bin-outline" color="error" @click="deleteTodo">
           Delete
-        </ButtonComponent>
+        </UButton>
       </div>
-    </CardComponent>
-    <ModalComponent v-if="isEditTodoModalVisible && editTodo">
-      <template #header>
-        <h1>Edit Todo</h1>
-      </template>
-      <template #body>
-        <div class="space-y-2">
-          <InputComponent v-model="editTodo.title" label="Title" />
-          <InputComponent v-model="editTodo.description" label="Description" />
-          <div class="flex gap-2">
-            <SelectComponent
-              class="w-1/2"
-              v-model="editTodo.priority"
-              :options="priorityOptions"
-              placeholder="Select a priority level"
-              label="Priority"
-            />
-            <DateTimeComponent class="w-1/2" v-model="editTodo.dueDate" label="Due Date" />
-          </div>
-          <CheckboxComponent v-model="editTodo.completed" bordered>Completed</CheckboxComponent>
-        </div>
-        <div class="flex justify-end gap-2">
-          <ButtonComponent color="secondary" @click="closeEditModal">Cancel</ButtonComponent>
-          <ButtonComponent
-            :disabled="loading"
-            name="flowbite:floppy-disk-alt-outline"
-            @click="save"
-          >
-            {{ loading ? "Saving..." : "Save" }}
-          </ButtonComponent>
-        </div>
-      </template>
-    </ModalComponent>
+    </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CardComponent from "@/components/card/CardComponent.vue";
-import CheckboxComponent from "@/components/checkbox/CheckboxComponent.vue";
-import DateTimeComponent from "@/components/date-time/DateTimeComponent.vue";
-import InputComponent from "@/components/input/InputComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
-import SelectComponent from "@/components/select/SelectComponent.vue";
-import TitleComponent from "@/components/title/TitleComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/TodoTypes";
 import { formatDate } from "@/utils";
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
-const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
-
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const todoService = TodoService.getInstance();
 
-const loading = ref<boolean>(false);
-const isEditTodoModalVisible = ref<boolean>(false);
+const loading = ref(false);
+const isEditTodoModalOpen = ref(false);
 
 const todoId = route.params.id as string;
+const priorityOptions = Object.values(Priority);
 
-const priorityOptions = Object.values(Priority).map((value) => ({
-  name: value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(),
-  value,
-}));
+const todo = ref<TodoId>();
 
-const todo = ref<TodoId | undefined>();
-const editTodo = ref<UpdateTodo | undefined>();
+const state = ref<UpdateTodo>({});
 
-const updateTodoSchema = z.object({
+const schema = z.object({
   title: z.string().nonempty("Title is required"),
-  description: z.string(),
+  description: z.string().optional(),
   dueDate: z.date().optional(),
   completed: z.boolean(),
-  priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
+  priority: z.enum(priorityOptions as [Priority, ...Priority[]]),
+});
+
+const formattedDueDate = computed({
+  get() {
+    return state.value.dueDate ? state.value.dueDate.toISOString().slice(0, 16) : "";
+  },
+  set(value) {
+    state.value.dueDate = value ? new Date(value) : undefined;
+  },
 });
 
 onMounted(async () => {
   try {
     todo.value = await todoService.findOne(todoId);
-  } catch (error) {
-    console.error(error);
-  }
-});
 
-function openEditModal() {
-  if (todo.value) {
-    editTodo.value = {
+    if (!todo.value) return;
+
+    state.value = {
       title: todo.value.title,
       description: todo.value.description,
       dueDate: todo.value.dueDate ? new Date(todo.value.dueDate) : undefined,
       completed: todo.value.completed,
       priority: todo.value.priority,
+      updatedAt: new Date(),
     };
+  } catch (error) {
+    console.error(error);
   }
-
-  isEditTodoModalVisible.value = true;
-}
-
-function closeEditModal() {
-  isEditTodoModalVisible.value = false;
-
-  editTodo.value = undefined;
-}
+});
 
 function handleBackButtonClick() {
-  if (!todo.value) return;
-
-  router.push({ name: "list-page", params: { id: todo.value.listId } });
+  if (todo.value) router.push({ name: "list-page", params: { id: todo.value.listId } });
 }
 
 async function save() {
-  if (!editTodo.value || !todo.value) {
-    return;
-  }
+  if (!state.value || !todo.value) return;
 
   loading.value = true;
 
   try {
-    editTodo.value.updatedAt = new Date();
+    todo.value = await todoService.update(todoId, schema.parse(state.value));
 
-    const updatedTodo = await todoService.update(todoId, updateTodoSchema.parse(editTodo.value));
-    todo.value = updatedTodo;
-    isEditTodoModalVisible.value = false;
+    toast.add({
+      title: "Success",
+      description: "The to-do item has been updated.",
+      color: "success",
+      icon: "flowbite:check-circle-outline",
+    });
+
+    isEditTodoModalOpen.value = false;
   } catch (error) {
     console.error(error);
   } finally {
@@ -168,9 +167,7 @@ async function save() {
 }
 
 async function deleteTodo() {
-  if (!todo.value) {
-    return;
-  }
+  if (!todo.value) return;
 
   try {
     await todoService.remove(todoId);
