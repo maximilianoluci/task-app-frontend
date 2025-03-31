@@ -1,59 +1,44 @@
 <template>
-  <AlertComponent
-    v-if="errorMessage"
-    class="absolute inset-x-0 top-4 left-1/2 z-50 w-fit -translate-x-1/2 transform"
-    type="danger"
-    :message="errorMessage"
-    closable
-    @click="clearMessage"
-  />
-  <div class="relative z-0 mx-auto">
-    <h1 class="mb-2">Sign Up</h1>
-    <CardComponent padding="sm">
-      <div class="space-y-3">
-        <InputComponent
+  <h1 class="mb-2">Sign Up</h1>
+  <UCard variant="subtle">
+    <div class="space-y-3">
+      <UForm :schema="createUserSchema" :state="form" class="space-y-3" @submit="create">
+        <UFormField
           v-for="field in fields"
           :key="field.name"
-          v-bind="field"
+          :label="field.label"
+          :type="field.type"
           v-model="form[field.name]"
-          :error="errors[field.name]"
-        />
-        <ButtonComponent
-          :name="loading ? 'line-md:loading-twotone-loop' : undefined"
-          :disabled="loading"
-          @click="create"
         >
-          {{ loading ? "Signing Up..." : "Sign Up" }}
-        </ButtonComponent>
-      </div>
-    </CardComponent>
-  </div>
-  <ModalComponent
-    v-if="isModalVisible"
-    show-close-button
-    @update:visible="() => (isModalVisible = false)"
-  >
-    <template #body>
-      <div class="flex flex-col items-center gap-2">
-        <UIcon
-          name="flowbite:check-circle-outline"
-          class="size-14 text-green-800 dark:text-green-400"
-        />
-        <p class="text-bold text-center text-xl">Sign up successful!</p>
-        <ButtonComponent @click="goToLogin">Log In</ButtonComponent>
-      </div>
-    </template>
-  </ModalComponent>
+          <UInput
+            v-model="form[field.name]"
+            :type="field.type"
+            class="w-full"
+            :error="errors[field.name]"
+          />
+        </UFormField>
+        <UModal v-model="isModalVisible">
+          <UButton type="submit" loading-auto>Sign Up</UButton>
+          <template #body>
+            <div class="flex flex-col items-center gap-2">
+              <UIcon
+                name="flowbite:check-circle-outline"
+                class="size-14 text-green-800 dark:text-green-400"
+              />
+              <p class="text-bold text-center text-xl">Sign up successful!</p>
+              <UButton @click="goToLogin">Log In</UButton>
+            </div>
+          </template>
+        </UModal>
+      </UForm>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import AlertComponent from "@/components/alert/AlertComponent.vue";
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CardComponent from "@/components/card/CardComponent.vue";
-import InputComponent from "@/components/input/InputComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import type { CreateUser } from "@/modules/user/types/UserTypes";
-import { defineAsyncComponent, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { z } from "zod";
 
@@ -64,8 +49,6 @@ const userService = UserService.getInstance();
 const loading = ref<boolean>(false);
 const isModalVisible = ref<boolean>(false);
 const errorMessage = ref<string | undefined>();
-
-const ModalComponent = defineAsyncComponent(() => import("@/components/modal/ModalComponent.vue"));
 
 const fields = [
   { name: "name", label: "Name", type: "text" },
@@ -99,10 +82,6 @@ const createUserSchema = z
       });
     }
   });
-
-function clearMessage() {
-  errorMessage.value = undefined;
-}
 
 watch(errorMessage, (newValue) => {
   if (newValue) {
