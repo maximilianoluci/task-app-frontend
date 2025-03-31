@@ -17,6 +17,16 @@
             :error="errors[field.name]"
           />
         </UFormField>
+        <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
+          Already have an account?
+          <ULink
+            to="log-in"
+            class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
+          >
+            Log in
+          </ULink>
+          here!
+        </span>
         <UModal v-model="isModalVisible">
           <UButton type="submit" loading-auto>Sign Up</UButton>
           <template #body>
