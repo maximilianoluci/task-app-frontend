@@ -1,48 +1,39 @@
 <template>
-  <AlertComponent
-    v-if="errorMessage"
-    class="absolute inset-x-0 top-4 left-1/2 z-50 w-fit -translate-x-1/2 transform"
-    type="danger"
-    :message="errorMessage"
-    closable
-    @click="clearMessage"
-  />
   <h1 class="mb-2">Log In</h1>
-  <CardComponent padding="sm">
+  <UCard variant="subtle">
     <div class="space-y-3">
-      <InputComponent
-        v-for="field in fields"
-        :key="field.name"
-        v-bind="field"
-        v-model="form[field.name]"
-        :error="errors[field.name]"
-      />
-      <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
-        Don't have an account?
-        <RouterLink
-          to="sign-up"
-          class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
+      <UForm :schema="createUserSchema" :state="form" class="space-y-3" @submit="signIn">
+        <UFormField
+          v-for="field in fields"
+          :key="field.name"
+          :label="field.label"
+          :type="field.type"
+          v-model="form[field.name]"
         >
-          Sign up
-        </RouterLink>
-        here!
-      </span>
-      <ButtonComponent
-        :name="loading ? 'line-md:loading-twotone-loop' : undefined"
-        :disabled="loading"
-        @click="signIn"
-      >
-        {{ loading ? "Logging In..." : "Log In" }}
-      </ButtonComponent>
+          <UInput
+            v-model="form[field.name]"
+            :type="field.type"
+            class="w-full"
+            :error="errors[field.name]"
+          />
+        </UFormField>
+        <span class="block text-center text-sm text-gray-500 dark:text-gray-400">
+          Don't have an account?
+          <ULink
+            to="sign-up"
+            class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
+          >
+            Sign up
+          </ULink>
+          here!
+        </span>
+        <UButton type="submit" loading-auto>Log In</UButton>
+      </UForm>
     </div>
-  </CardComponent>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import AlertComponent from "@/components/alert/AlertComponent.vue";
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CardComponent from "@/components/card/CardComponent.vue";
-import InputComponent from "@/components/input/InputComponent.vue";
 import AuthService from "@/modules/auth/services/AuthService";
 import type { SignInUser } from "@/modules/user/types/UserTypes";
 import { useAuthStore } from "@/stores/auth";
@@ -81,10 +72,6 @@ watch(errorMessage, (newValue) => {
     setTimeout(() => (errorMessage.value = undefined), 3000);
   }
 });
-
-function clearMessage() {
-  errorMessage.value = undefined;
-}
 
 async function signIn() {
   Object.keys(errors).forEach((key) => (errors[key] = ""));
