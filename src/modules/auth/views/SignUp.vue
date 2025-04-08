@@ -27,19 +27,7 @@
           </ULink>
           here!
         </span>
-        <UModal v-model="isModalVisible">
-          <UButton type="submit" loading-auto>Sign Up</UButton>
-          <template #body>
-            <div class="flex flex-col items-center gap-2">
-              <UIcon
-                name="flowbite:check-circle-outline"
-                class="size-14 text-green-800 dark:text-green-400"
-              />
-              <p class="text-bold text-center text-xl">Sign up successful!</p>
-              <UButton @click="goToLogin">Log In</UButton>
-            </div>
-          </template>
-        </UModal>
+        <UButton type="submit" loading-auto>Sign Up</UButton>
       </UForm>
     </div>
   </UCard>
@@ -53,11 +41,10 @@ import { useRouter } from "vue-router";
 import { z } from "zod";
 
 const router = useRouter();
+const toast = useToast();
 
 const userService = UserService.getInstance();
 
-const loading = ref<boolean>(false);
-const isModalVisible = ref<boolean>(false);
 const errorMessage = ref<string | undefined>();
 
 const fields = [
@@ -101,7 +88,6 @@ watch(errorMessage, (newValue) => {
 
 async function create() {
   Object.keys(errors).forEach((key) => (errors[key] = ""));
-  loading.value = true;
 
   const { success, error } = createUserSchema.safeParse(form);
 
@@ -109,7 +95,6 @@ async function create() {
     error.issues.forEach((issue) => {
       errors[issue.path[0]] = issue.message;
     });
-    loading.value = false;
     return;
   }
 
@@ -117,15 +102,17 @@ async function create() {
     const newUser = { ...form };
 
     await userService.create(newUser as CreateUser);
-    isModalVisible.value = true;
+
+    toast.add({
+      title: "Success",
+      description: "The user has successfully signed up.",
+      color: "success",
+      icon: "flowbite:check-circle-outline",
+    });
+
+    router.push({ name: "log-in" });
   } catch (error) {
     errorMessage.value = (error as Error).message || "An error occurred";
-  } finally {
-    loading.value = false;
   }
-}
-
-function goToLogin() {
-  router.push({ name: "log-in" });
 }
 </script>

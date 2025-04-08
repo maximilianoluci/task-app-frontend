@@ -1,49 +1,45 @@
 <template>
-  <AlertComponent
-    v-if="errorMessage"
-    class="absolute inset-x-0 top-4 left-1/2 z-50 w-fit -translate-x-1/2 transform"
-    type="danger"
-    :message="errorMessage"
-    closable
-    @click="clearMessage"
-  />
   <h1 class="mb-2">Change Password</h1>
-  <CardComponent padding="sm">
+  <UCard variant="subtle">
     <div class="space-y-3">
-      <InputComponent
-        v-for="field in fields"
-        :key="field.name"
-        v-bind="field"
-        v-model="form[field.name]"
-        :error="errors[field.name]"
-      />
-      <ButtonComponent
-        :name="loading ? 'line-md:loading-twotone-loop' : undefined"
-        :disabled="loading"
-        @click="changePassword"
+      <UForm
+        :schema="changePasswordSchema"
+        :state="form"
+        class="space-y-3"
+        @submit="changePassword"
       >
-        {{ loading ? "Changing Password..." : "Change Password" }}
-      </ButtonComponent>
+        <UFormField
+          v-for="field in fields"
+          :key="field.name"
+          :label="field.label"
+          :type="field.type"
+          v-model="form[field.name]"
+        >
+          <UInput
+            v-model="form[field.name]"
+            :type="field.type"
+            class="w-full"
+            :error="errors[field.name]"
+          />
+        </UFormField>
+        <UButton type="submit" loading-auto>Change Password</UButton>
+      </UForm>
     </div>
-  </CardComponent>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import AlertComponent from "@/components/alert/AlertComponent.vue";
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
-import CardComponent from "@/components/card/CardComponent.vue";
-import InputComponent from "@/components/input/InputComponent.vue";
 import AuthService from "@/modules/auth/services/AuthService";
-import { reactive, ref, watch } from "vue";
+import { reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const authService = AuthService.getInstance();
 
-const loading = ref<boolean>(false);
 const errorMessage = ref<string | undefined>();
 
 const userId = route.params.id as string;
@@ -62,21 +58,11 @@ const form = reactive<Record<string, string>>({
 
 const errors = reactive<Record<string, string>>({});
 
-const createUserSchema = z.object({
+const changePasswordSchema = z.object({
   currentPassword: z.string().min(5, "Current password is required"),
   newPassword: z.string().min(5, "New password is required"),
   newPasswordConfirm: z.string().min(5, "Confirm new password is required"),
 });
-
-watch(errorMessage, (newValue) => {
-  if (newValue) {
-    setTimeout(() => (errorMessage.value = undefined), 3000);
-  }
-});
-
-function clearMessage() {
-  errorMessage.value = undefined;
-}
 
 async function changePassword() {
   Object.keys(errors).forEach((key) => (errors[key] = ""));
@@ -84,14 +70,12 @@ async function changePassword() {
   const { currentPassword, newPassword, newPasswordConfirm } = form;
 
   try {
-    createUserSchema.parse({ currentPassword, newPassword, newPasswordConfirm });
+    changePasswordSchema.parse({ currentPassword, newPassword, newPasswordConfirm });
 
     if (newPassword !== newPasswordConfirm) {
       errors.newPasswordConfirm = "Passwords do not match";
       return;
     }
-
-    loading.value = true;
 
     await authService.changePassword({
       id: userId,
@@ -100,15 +84,16 @@ async function changePassword() {
       newPasswordConfirm,
     });
 
-    loading.value = false;
-
-    errorMessage.value = undefined;
+    toast.add({
+      title: "Success",
+      description: "The password has been changed successfully.",
+      color: "success",
+      icon: "flowbite:check-circle-outline",
+    });
 
     router.push({ name: "user-page", params: { id: userId } });
   } catch (error) {
     errorMessage.value = (error as Error).message;
-  } finally {
-    loading.value = false;
   }
 }
 </script>
