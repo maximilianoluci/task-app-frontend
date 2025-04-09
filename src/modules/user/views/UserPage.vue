@@ -6,12 +6,11 @@
     <h1 class="mb-2">User Page</h1>
     <div>User: {{ user.name }}</div>
     <div>Email: {{ user.email }}</div>
-    <ButtonComponent @click="changePassword">Change Password</ButtonComponent>
+    <UButton @click="changePassword">Change Password</UButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import ButtonComponent from "@/components/button/ButtonComponent.vue";
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import UserService from "@/modules/user/services/UserService";
 import { type UserId } from "@/modules/user/types/UserTypes";
