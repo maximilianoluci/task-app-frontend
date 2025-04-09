@@ -83,9 +83,13 @@ import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/TodoTypes";
 import { formatDate } from "@/utils";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
+
+dayjs.extend(utc);
 
 const route = useRoute();
 const router = useRouter();
@@ -113,10 +117,17 @@ const schema = z.object({
 
 const formattedDueDate = computed({
   get() {
-    return state.value.dueDate ? state.value.dueDate.toISOString().slice(0, 16) : "";
+    if (!state.value.dueDate) return "";
+
+    return dayjs(state.value.dueDate).local().format("YYYY-MM-DDTHH:mm");
   },
   set(value) {
-    state.value.dueDate = value ? new Date(value) : undefined;
+    if (!value) {
+      state.value.dueDate = undefined;
+      return;
+    }
+
+    state.value.dueDate = dayjs(value).utc().toDate();
   },
 });
 

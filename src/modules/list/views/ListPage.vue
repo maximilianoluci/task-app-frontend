@@ -148,9 +148,13 @@ import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
 import { formatDate } from "@/utils";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
+
+dayjs.extend(utc);
 
 const route = useRoute();
 const router = useRouter();
@@ -202,10 +206,17 @@ const createTodoSchema = z.object({
 
 const formattedDueDate = computed({
   get() {
-    return createTodoState.dueDate ? createTodoState.dueDate.toISOString().slice(0, 16) : "";
+    if (!createTodoState.dueDate) return "";
+
+    return dayjs(createTodoState.dueDate).local().format("YYYY-MM-DDTHH:mm");
   },
   set(value) {
-    createTodoState.dueDate = value ? new Date(value) : undefined;
+    if (!value) {
+      createTodoState.dueDate = undefined;
+      return;
+    }
+
+    createTodoState.dueDate = dayjs(value).utc().toDate();
   },
 });
 

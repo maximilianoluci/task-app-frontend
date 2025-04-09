@@ -9,18 +9,10 @@
         Task App
       </RouterLink>
       <div class="mt-5 flex flex-row items-center gap-5 md:mt-0 md:ps-5">
-        <button
-          class="cursor-pointer font-medium text-gray-600 hover:text-gray-400 active:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500 dark:active:text-neutral-600"
-          @click="mode = mode === 'dark' ? 'light' : 'dark'"
-        >
+        <UButton color="neutral" variant="link" @click="mode = mode === 'dark' ? 'light' : 'dark'">
           {{ mode === "dark" ? "Light" : "Dark" }} Mode
-        </button>
-        <button
-          class="cursor-pointer font-medium text-gray-600 hover:text-gray-400 active:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500 dark:active:text-neutral-600"
-          @click="logOut()"
-        >
-          Log Out
-        </button>
+        </UButton>
+        <UButton color="neutral" variant="link" @click="logOut()"> Log Out </UButton>
       </div>
     </nav>
   </header>
