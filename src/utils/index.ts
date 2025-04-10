@@ -27,7 +27,9 @@ export function toSentenceCase(text: string): string {
         const trimmed = sentence.trim();
         if (trimmed.length === 0) return sentence;
 
-        return sentence.replace(trimmed.charAt(0), trimmed.charAt(0).toUpperCase());
+        const firstChar = trimmed.charAt(0).toUpperCase();
+        const rest = trimmed.slice(1).toLowerCase();
+        return sentence.replace(trimmed, firstChar + rest);
       } else {
         return sentence;
       }

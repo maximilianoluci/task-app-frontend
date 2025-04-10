@@ -65,7 +65,7 @@
         <div class="font-semibold">Completed:</div>
         <div>{{ todo.completed ? "Yes" : "No" }}</div>
         <div class="font-semibold">Priority:</div>
-        <div>{{ todo.priority }}</div>
+        <div>{{ toSentenceCase(todo.priority || "") }}</div>
         <div class="font-semibold">Last Updated:</div>
         <div>{{ formatDate(todo.updatedAt) }}</div>
       </div>
