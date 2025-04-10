@@ -82,7 +82,7 @@
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/TodoTypes";
-import { formatDate } from "@/utils";
+import { formatDate, toSentenceCase } from "@/utils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { computed, onMounted, ref } from "vue";
@@ -101,7 +101,10 @@ const loading = ref(false);
 const isEditTodoModalOpen = ref(false);
 
 const todoId = route.params.id as string;
-const priorityOptions = Object.values(Priority);
+const priorityOptions = Object.values(Priority).map((priority) => ({
+  label: toSentenceCase(priority),
+  value: priority,
+}));
 
 const todo = ref<TodoId>();
 
@@ -112,7 +115,7 @@ const schema = z.object({
   description: z.string().optional(),
   dueDate: z.date().optional(),
   completed: z.boolean(),
-  priority: z.enum(priorityOptions as [Priority, ...Priority[]]),
+  priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
 });
 
 const formattedDueDate = computed({

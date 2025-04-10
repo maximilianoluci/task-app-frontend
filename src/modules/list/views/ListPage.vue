@@ -147,7 +147,7 @@ import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
-import { formatDate } from "@/utils";
+import { formatDate, toSentenceCase } from "@/utils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { computed, onMounted, reactive, ref } from "vue";
@@ -170,7 +170,10 @@ const isDeleteModalOpen = ref<boolean>(false);
 
 const listId = route.params.id as string;
 
-const priorityOptions = Object.values(Priority).map((value) => value);
+const priorityOptions = Object.values(Priority).map((priority) => ({
+  label: toSentenceCase(priority),
+  value: priority,
+}));
 
 const list = ref<ListId | undefined>();
 
