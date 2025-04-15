@@ -86,11 +86,7 @@
           <UButton icon="flowbite:plus-outline">New</UButton>
 
           <template #body>
-            <TodoForm
-              :schema="createTodoSchema"
-              :state="createTodoState"
-              @submit-form="saveNewTodo"
-            />
+            <TodoForm :schema="createTodoSchema" :state="createTodoState" @submit="saveNewTodo" />
           </template>
         </UModal>
       </div>

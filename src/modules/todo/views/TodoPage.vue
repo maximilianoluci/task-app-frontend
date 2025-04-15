@@ -20,7 +20,7 @@
         <UButton icon="flowbite:edit-outline">Edit</UButton>
 
         <template #body>
-          <TodoForm :schema :state edit @submit-form="save" />
+          <TodoForm :schema :state edit @submit="save" />
         </template>
       </UModal>
     </div>

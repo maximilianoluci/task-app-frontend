@@ -1,5 +1,5 @@
 <template>
-  <UForm :schema="localSchema" :state="localState" class="space-y-4" @submit="submitForm">
+  <UForm :schema="localSchema" :state="localState" class="space-y-4" @submit="submit">
     <UFormField label="Title" name="title">
       <UInput v-model="localState.title" class="w-full" />
     </UFormField>
@@ -42,7 +42,7 @@ const props = defineProps<{
   edit?: boolean;
 }>();
 
-const emit = defineEmits(["submitForm"]);
+const emit = defineEmits(["submit"]);
 
 const localState = ref<CreateTodo | UpdateTodo>({ ...props.state });
 
@@ -71,11 +71,11 @@ const formattedDueDate = computed({
   },
 });
 
-function submitForm() {
+function submit() {
   if (props.edit) {
     Object.assign(props.state, localState.value);
   }
 
-  emit("submitForm", localState.value);
+  emit("submit", localState.value);
 }
 </script>
