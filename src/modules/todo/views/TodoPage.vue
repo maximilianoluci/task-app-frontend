@@ -20,37 +20,7 @@
         <UButton icon="flowbite:edit-outline">Edit</UButton>
 
         <template #body>
-          <UForm :schema :state class="space-y-4" @submit="save">
-            <UFormField label="Title" name="title">
-              <UInput v-model="state.title" class="w-full" />
-            </UFormField>
-            <UFormField label="Description" name="description">
-              <UInput v-model="state.description" class="w-full" />
-            </UFormField>
-            <div class="grid grid-cols-2 gap-2">
-              <UFormField label="Priority" name="priority">
-                <USelect
-                  v-model="state.priority"
-                  :items="priorityOptions"
-                  placeholder="Select a priority level"
-                  class="w-full"
-                />
-              </UFormField>
-              <UFormField label="Due Date" name="dueDate">
-                <UInput type="datetime-local" v-model="formattedDueDate" class="w-full" />
-              </UFormField>
-            </div>
-
-            <UFormField
-              class="w-full rounded-md border border-gray-300 py-3 ps-4 dark:border-zinc-700"
-              name="completed"
-            >
-              <UCheckbox v-model="state.completed" label="Completed" />
-            </UFormField>
-            <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
-              Save
-            </UButton>
-          </UForm>
+          <TodoForm :schema :state edit @submit-form="save" />
         </template>
       </UModal>
     </div>
@@ -85,9 +55,10 @@ import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/Tod
 import { formatDate, toSentenceCase } from "@/utils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
+import TodoForm from "../components/TodoForm.vue";
 
 dayjs.extend(utc);
 
@@ -97,14 +68,9 @@ const toast = useToast();
 
 const todoService = TodoService.getInstance();
 
-const loading = ref(false);
 const isEditTodoModalOpen = ref(false);
 
 const todoId = route.params.id as string;
-const priorityOptions = Object.values(Priority).map((priority) => ({
-  label: toSentenceCase(priority),
-  value: priority,
-}));
 
 const todo = ref<TodoId>();
 
@@ -116,22 +82,6 @@ const schema = z.object({
   dueDate: z.date().optional(),
   completed: z.boolean(),
   priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
-});
-
-const formattedDueDate = computed({
-  get() {
-    if (!state.value.dueDate) return "";
-
-    return dayjs(state.value.dueDate).local().format("YYYY-MM-DDTHH:mm");
-  },
-  set(value) {
-    if (!value) {
-      state.value.dueDate = undefined;
-      return;
-    }
-
-    state.value.dueDate = dayjs(value).utc().toDate();
-  },
 });
 
 onMounted(async () => {
@@ -157,13 +107,11 @@ function handleBackButtonClick() {
   if (todo.value) router.push({ name: "list-page", params: { id: todo.value.listId } });
 }
 
-async function save() {
-  if (!state.value || !todo.value) return;
-
-  loading.value = true;
+async function save(updatedTodo: UpdateTodo) {
+  if (!updatedTodo || !todo.value) return;
 
   try {
-    todo.value = await todoService.update(todoId, schema.parse(state.value));
+    todo.value = await todoService.update(todoId, schema.parse(updatedTodo));
 
     toast.add({
       title: "Success",
@@ -175,8 +123,6 @@ async function save() {
     isEditTodoModalOpen.value = false;
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
   }
 }
 

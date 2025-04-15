@@ -86,42 +86,11 @@
           <UButton icon="flowbite:plus-outline">New</UButton>
 
           <template #body>
-            <UForm
+            <TodoForm
               :schema="createTodoSchema"
               :state="createTodoState"
-              class="space-y-4"
-              @submit="saveNewTodo"
-            >
-              <UFormField label="Title" name="title">
-                <UInput v-model="createTodoState.title" class="w-full" />
-              </UFormField>
-              <UFormField label="Description" name="description">
-                <UInput v-model="createTodoState.description" class="w-full" />
-              </UFormField>
-              <div class="grid grid-cols-2 gap-2">
-                <UFormField label="Priority" name="priority">
-                  <USelect
-                    v-model="createTodoState.priority"
-                    :items="priorityOptions"
-                    placeholder="Select a priority level"
-                    class="w-full"
-                  />
-                </UFormField>
-                <UFormField label="Due Date" name="dueDate">
-                  <UInput type="datetime-local" v-model="formattedDueDate" class="w-full" />
-                </UFormField>
-              </div>
-
-              <UFormField
-                class="w-full rounded-md border border-gray-300 py-3 ps-4 dark:border-zinc-700"
-                name="completed"
-              >
-                <UCheckbox v-model="createTodoState.completed" label="Completed" />
-              </UFormField>
-              <UButton type="submit" icon="flowbite:floppy-disk-alt-outline" loading-auto>
-                Add
-              </UButton>
-            </UForm>
+              @submit-form="saveNewTodo"
+            />
           </template>
         </UModal>
       </div>
@@ -145,12 +114,13 @@
 import LoadingComponent from "@/components/loading/LoadingComponent.vue";
 import ListService from "@/modules/list/services/ListService";
 import type { ListId, UpdateList } from "@/modules/list/types/ListTypes";
+import TodoForm from "@/modules/todo/components/TodoForm.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type CreateTodo, type TodoId } from "@/modules/todo/types/TodoTypes";
-import { formatDate, toSentenceCase } from "@/utils";
+import { formatDate } from "@/utils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { computed, onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 
@@ -163,17 +133,11 @@ const toast = useToast();
 const listService = ListService.getInstance();
 const todoService = TodoService.getInstance();
 
-const loading = ref<boolean>(false);
 const isEditListModalOpen = ref<boolean>(false);
 const isNewTodoModalOpen = ref<boolean>(false);
 const isDeleteModalOpen = ref<boolean>(false);
 
 const listId = route.params.id as string;
-
-const priorityOptions = Object.values(Priority).map((priority) => ({
-  label: toSentenceCase(priority),
-  value: priority,
-}));
 
 const list = ref<ListId | undefined>();
 
@@ -205,22 +169,6 @@ const createTodoSchema = z.object({
   priority: z.enum([...Object.values(Priority)] as [Priority, ...Priority[]]),
   createdAt: z.date(),
   updatedAt: z.date(),
-});
-
-const formattedDueDate = computed({
-  get() {
-    if (!createTodoState.dueDate) return "";
-
-    return dayjs(createTodoState.dueDate).local().format("YYYY-MM-DDTHH:mm");
-  },
-  set(value) {
-    if (!value) {
-      createTodoState.dueDate = undefined;
-      return;
-    }
-
-    createTodoState.dueDate = dayjs(value).utc().toDate();
-  },
 });
 
 onMounted(async () => {
@@ -274,25 +222,19 @@ async function saveList() {
 }
 
 async function deleteList() {
-  loading.value = true;
-
   try {
     await listService.remove(listId);
     router.push({ name: "list-list", params: { userId: list.value?.userId } });
     isDeleteModalOpen.value = false;
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
   }
 }
 
-async function saveNewTodo() {
-  loading.value = true;
-
+async function saveNewTodo(newTodo: CreateTodo) {
   try {
-    createTodoSchema.parse(createTodoState);
-    await todoService.create(createTodoState);
+    createTodoSchema.parse(newTodo);
+    await todoService.create(newTodo);
     todos.value = await todoService.findAll(listId);
 
     toast.add({
@@ -305,8 +247,6 @@ async function saveNewTodo() {
     isNewTodoModalOpen.value = false;
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
   }
 }
 </script>
