@@ -54,13 +54,9 @@ import TodoForm from "@/modules/todo/components/TodoForm.vue";
 import TodoService from "@/modules/todo/services/TodoService";
 import { Priority, type TodoId, type UpdateTodo } from "@/modules/todo/types/TodoTypes";
 import { formatDate, toSentenceCase } from "@/utils";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
-
-dayjs.extend(utc);
 
 const route = useRoute();
 const router = useRouter();
